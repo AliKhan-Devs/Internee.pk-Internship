@@ -51,7 +51,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { text: "Internships", icon: BuildingOfficeIcon, solidIcon: BriefcaseIconSolid, path: "/internships" },
     { text: "My Applications", icon: ClipboardDocumentListIcon, solidIcon: ClipboardDocumentListIconSolid, path: "/my-applications" },
     { text: "My Tasks", icon: DocumentTextIcon, solidIcon: DocumentTextIconSolid, path: "/my-tasks" },
-    { text: "My Submissions", icon: ClipboardDocumentCheckIcon, solidIcon: ClipboardDocumentCheckIconSolid, path: "/my-submissions" },
+    // { text: "My Submissions", icon: ClipboardDocumentCheckIcon, solidIcon: ClipboardDocumentCheckIconSolid, path: "/my-submissions" },
   ];
 
   const menuItems = isAdmin ? adminMenuItems : interneeMenuItems;

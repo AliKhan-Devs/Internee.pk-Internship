@@ -64,7 +64,7 @@ export const getUserTask = async (req, res) => {
     // Step 1: Find an active application tasks for the user
     const userApplication = await Application.findOne({
       userId: userId,
-      status: "active" | "completed",
+      status: "active",
     }).populate("tasks");
 
     const userTasks = userApplication?.tasks;

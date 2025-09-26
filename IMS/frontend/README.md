@@ -36,8 +36,12 @@ frontend/
 │ │
 │ ├── pages/
 │ │ ├── admin/ # Admin-specific pages (manage interns, tasks, etc.)
-│ │ ├── intern/ # Intern-specific pages (tasks, submissions, progress)
-│ │ └── public/ # Public pages (home, login, register, apply internship)
+│ │ ├── User/ # Intern-specific pages (tasks, submissions, progress)
+│ │ └── common/ # Common pages for admin and internee only data is different
+│ │ └── auth/ # Auth pages like login and register
+| | 
+│ │ ├── NotFoundPage.js # 404 page
+│ │ ├── Home.js # Landing page
 │ │
 │ ├── services/
 │ │ ├── api.js # Axios instance & base API setup
@@ -51,3 +55,51 @@ frontend/
 │ └── ...
 │
 └── package.json
+
+```
+
+---
+
+## 🔑 Authentication & Routing
+- **AuthContext** manages user login state, JWT token storage, and logout functionality.  
+- **ProtectedRoutes** ensures only authorized users can access admin/intern dashboards.  
+- **Role-based Navigation**:  
+  - Admins see task management, intern approvals, and performance dashboard.  
+  - Interns see assigned tasks, submission forms, and feedback.  
+  - Public users can view Home Page and login/register to get started. 
+
+---
+
+## ⚡ Getting Started
+
+### Prerequisites
+- Node.js >= 16  
+- Backend API running locally or deployed  
+
+### Installation
+1. Navigate to the frontend folder:
+   ```bash
+   cd IMS/frontend
+2. Install dependencies:
+   ```bash
+   npm install
+3. Start the development server:
+   ```bash
+   npm start
+4. Open your browser and navigate to http://localhost:3000
+
+---
+
+#Future Improvements
+- Implement file upload for submissions (optional)
+- Add pagination for large lists (optional)
+- Add error handling for API requests (optional)
+
+#Acknowledgements
+- This project is a part of my virtual internship at Internee.pk (https://internee.pk/).
+
+#Contact
+- Email: [alikhandevs@gmail.com](mailto:alikhandevs@gmail.com)
+
+#License
+This project is licensed under the [MIT License](LICENSE).
