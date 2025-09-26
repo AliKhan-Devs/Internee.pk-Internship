@@ -1,54 +1,53 @@
-# 📌 Internship Management System (IMS)
+# 🎨 Internship Management System - Frontend
 
-The **Internship Management System (IMS)** is a full-stack MERN project developed as part of my virtual internship at **Internee.pk**.  
-It follows a complete **Software Development Life Cycle (SDLC)** approach — starting from **SRS → Design → Implementation → Testing → Documentation**.
+This is the **frontend application** for the **Internship Management System (IMS)**.  
+It is built with **React (CRA)** and styled using **Tailwind CSS**, providing separate dashboards and views for **Admins** and **Interns**, as well as public pages for unauthenticated users.  
 
 ---
 
 ## 🚀 Features
-
-### 👨‍💼 Admin
-- Secure login & authentication.  
-- Create & manage internship programs.  
-- Approve/Reject intern applications (1 active internship per intern).  
-- Assign tasks with deadlines.  
-- Review intern submissions and provide feedback.  
-- Monitor performance via dashboard.  
-
-### 👨‍🎓 Intern
-- Register & login securely.  
-- Apply to one internship/domain at a time.  
-- View assigned tasks & deadlines.  
-- Submit work (files/links).  
-- Receive feedback and track progress.  
+- **Role-based Dashboards**: Separate layouts and pages for Admins, Interns, and Public (non-logged in) users.  
+- **Protected Routes**: Authenticated routes secured via `ProtectedRoutes` component.  
+- **Authentication Context**: Global state management for user login/logout and token persistence.  
+- **Reusable Layouts**:  
+  - Public layout (for visitors & applicants).  
+  - Logged-in layout with header and sidebar (for Admin/Interns).  
+- **Service Layer**: Centralized API service functions (`services/`) to interact with backend endpoints.  
+- **Responsive Design** with Tailwind CSS.  
 
 ---
 
-## 🏗️ Tech Stack
-- **Frontend:** React + Tailwind CSS  
-- **Backend:** Node.js + Express  
-- **Database:** MongoDB (Atlas)  
-- **Authentication:** JWT-based role-based access control  
-- **Deployment:** Cloud-ready (Vercel/Netlify for frontend, Render/Heroku for backend)  
+## 🏗️ Folder Structure
 
----
-
-## 📂 Project Structure
-- **IMS/frontend** → React + Tailwind app (Admin & Intern dashboards)  
-- **IMS/backend** → Node.js + Express backend with MongoDB models and APIs  
-
-(Each folder has its own README for setup and usage instructions.)  
-
----
-
-## ⚡ Getting Started
-
-### Prerequisites
-- Node.js >= 16  
-- MongoDB Atlas (or local MongoDB instance)  
-
-### Setup
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/alikhan-devs/Internee.pk-internships.git
-   cd Internee.pk-internships/IMS
+```
+frontend/
+│
+├── src/
+│ ├── components/
+│ │ ├── ProtectedRoutes.js # Secures private routes
+│ │ └── layouts/
+│ │ ├── Header.js # Common header
+│ │ ├── Sidebar.js # Sidebar for logged-in users
+│ │ ├── Layout.js # Dashboard layout for logged-in users
+│ │ └── PublicLayout.js # Layout for public pages
+│ │
+│ ├── context/
+│ │ └── AuthContext.js # Manages authentication state
+│ │
+│ ├── pages/
+│ │ ├── admin/ # Admin-specific pages (manage interns, tasks, etc.)
+│ │ ├── intern/ # Intern-specific pages (tasks, submissions, progress)
+│ │ └── public/ # Public pages (home, login, register, apply internship)
+│ │
+│ ├── services/
+│ │ ├── api.js # Axios instance & base API setup
+│ │ ├── authService.js # Auth-related API calls
+│ │ ├── internshipService.js # Internship-related API calls
+│ │ ├── taskService.js # Task-related API calls
+│ │ └── submissionService.js # Submission & feedback API calls
+│ │
+│ ├── App.js
+│ ├── index.js
+│ └── ...
+│
+└── package.json
