@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { applicationService } from "../services/applicationService";
+import { useAuth } from "../../contexts/AuthContext";
+import { applicationService } from "../../services/applicationService";
 import toast from "react-hot-toast";
 import {
   BuildingOfficeIcon,

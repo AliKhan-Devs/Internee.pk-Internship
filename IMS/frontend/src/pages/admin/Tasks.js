@@ -13,8 +13,8 @@ import {
   FileText,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { taskService } from "../services/taskService";
-import { internshipService } from "../services/internshipService";
+import { taskService } from "../../services/taskService";
+import { internshipService } from "../../services/internshipService";
 import { HiBuildingOffice2 } from "react-icons/hi2";
 
 const Tasks = () => {

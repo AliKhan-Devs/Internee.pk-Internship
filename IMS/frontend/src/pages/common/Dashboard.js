@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { internshipService } from "../services/internshipService";
-import { applicationService } from "../services/applicationService";
-import { taskService } from "../services/taskService";
+import { useAuth } from "../../contexts/AuthContext";
+import { internshipService } from "../../services/internshipService";
+import { applicationService } from "../../services/applicationService";
+import { taskService } from "../../services/taskService";
 import { Link } from "react-router-dom";
 import {Hand, Backpack, HandFist} from 'lucide-react'
 import {

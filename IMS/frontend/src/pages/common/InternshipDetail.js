@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { internshipService } from "../services/internshipService";
-import { applicationService } from "../services/applicationService";
+import { useAuth } from "../../contexts/AuthContext";
+import { internshipService } from "../../services/internshipService";
+import { applicationService } from "../../services/applicationService";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import {

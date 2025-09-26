@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { submissionService } from "../services/submissionService";
-import { feedbackService } from "../services/feedbackService";
+import { submissionService } from "../../services/submissionService";
+import { feedbackService } from "../../services/feedbackService";
 import { toast } from "react-hot-toast";
 import {
   ClipboardDocumentCheckIcon,

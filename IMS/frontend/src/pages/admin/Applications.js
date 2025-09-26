@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { ClipboardList, Check, X, Clock, User, Briefcase, MinusCircle, CheckCircle, Clock3 } from "lucide-react";
 import toast from "react-hot-toast";
-import { applicationService } from "../services/applicationService";
+import { applicationService } from "../../services/applicationService";
 import { Link } from "react-router-dom";
 
 const Applications = () => {

@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../contexts/AuthContext";
-import { internshipService } from "../services/internshipService";
+import { useAuth } from "../../contexts/AuthContext";
+import { internshipService } from "../../services/internshipService";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import {

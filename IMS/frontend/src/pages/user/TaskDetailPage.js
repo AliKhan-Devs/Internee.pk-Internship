@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { taskService } from "../services/taskService";
-import { submissionService } from "../services/submissionService";
-import { feedbackService } from "../services/feedbackService";
+import { taskService } from "../../services/taskService";
+import { submissionService } from "../../services/submissionService";
+import { feedbackService } from "../../services/feedbackService";
 import {
   FolderOpen,
   CheckCircle,
@@ -22,14 +22,14 @@ import {
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
-export default function SeeUserTask() {
+export default function InternshipTaskDetail() {
  
   const [tasks, setTasks] = useState([]);
   const [user, setUser] = useState({});
   const [taskData, setTaskData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isGridView, setIsGridView] = useState(true);
-
+const [internship, setInternship] = useState({});
   const [openHistory, setOpenHistory] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
@@ -43,15 +43,20 @@ export default function SeeUserTask() {
         setLoading(true);
         console.log(path.id);
         const res = await taskService.getApplicationTasks(path.id);
+        console.log('applicaiton',res);
         const fetchedTasks = res.tasks || [];
+
         const user = res.user || {};
+         setInternship(res.application.InternshipId || {});
         setUser(user);
         setTasks(fetchedTasks);
 
         const data = {};
+      
         for (let task of fetchedTasks) {
-          const subRes = await submissionService.getSubmissionByTaskAndUser(task._id,user._id);
+          const subRes = await submissionService.getSubmissionByTaskAndUser(task._id, user._id);
           let submissions = subRes?.submissions || [];
+          console.log("submissions", submissions);
           const submissionsWithFeedback = [];
           for (let sub of submissions) {
             const fbRes = await feedbackService.getFeedbackBySubmission(
@@ -250,10 +255,10 @@ export default function SeeUserTask() {
         <header className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-50">
-              {user.name}'s Tasks
+              {user.name}'s Tasks for {internship?.title}
             </h1>
             <p className="text-zinc-400 mt-2 text-sm sm:text-base">
-              If all the task are submitted and approve then mark this application completed
+            Here is your Task Summary for the internship 
             </p>
           </div>
           <div className="flex items-center space-x-2 p-1 rounded-lg bg-zinc-800 border border-zinc-700">

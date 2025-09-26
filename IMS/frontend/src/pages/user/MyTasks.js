@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { taskService } from "../services/taskService";
-import { submissionService } from "../services/submissionService";
-import { feedbackService } from "../services/feedbackService";
+import { taskService } from "../../services/taskService";
+import { submissionService } from "../../services/submissionService";
+import { feedbackService } from "../../services/feedbackService";
 import {
   FolderOpen,
   CheckCircle,
@@ -20,43 +20,32 @@ import {
   Watch
 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { useParams } from "react-router-dom";
 
-export default function InternshipTaskDetail() {
- 
+export default function TaskDashboard() {
   const [tasks, setTasks] = useState([]);
-  const [user, setUser] = useState({});
   const [taskData, setTaskData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isGridView, setIsGridView] = useState(true);
-const [internship, setInternship] = useState({});
+
+  const [openSubmit, setOpenSubmit] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
   const [githubRepoUrl, setGithubRepoUrl] = useState("");
   const [linkedinPostUrl, setLinkedinPostUrl] = useState("");
-  const path = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log(path.id);
-        const res = await taskService.getApplicationTasks(path.id);
-        console.log('applicaiton',res);
+        const res = await taskService.getMyTasks();
         const fetchedTasks = res.tasks || [];
-
-        const user = res.user || {};
-         setInternship(res.application.InternshipId || {});
-        setUser(user);
         setTasks(fetchedTasks);
 
         const data = {};
-      
         for (let task of fetchedTasks) {
-          const subRes = await submissionService.getSubmissionByTaskAndUser(task._id, user._id);
+          const subRes = await submissionService.getSubmissionByTask(task._id);
           let submissions = subRes?.submissions || [];
-          console.log("submissions", submissions);
           const submissionsWithFeedback = [];
           for (let sub of submissions) {
             const fbRes = await feedbackService.getFeedbackBySubmission(
@@ -80,6 +69,39 @@ const [internship, setInternship] = useState({});
     fetchData();
   }, []);
 
+  const handleSubmit = async (taskId) => {
+    if (!githubRepoUrl) {
+      toast.error("GitHub repository URL is required.");
+      return;
+    }
+    try {
+      await submissionService.submitTask(taskId, {
+        githubRepoUrl,
+        linkedinPostUrl,
+      });
+      toast.success("Task submitted successfully!");
+      setOpenSubmit(false);
+      setGithubRepoUrl("");
+      setLinkedinPostUrl("");
+      const subRes = await submissionService.getSubmissionByTask(taskId);
+      let submissions = subRes?.submissions || [];
+      const submissionsWithFeedback = [];
+      for (let sub of submissions) {
+        const fbRes = await feedbackService.getFeedbackBySubmission(sub._id);
+        submissionsWithFeedback.push({
+          ...sub,
+          feedback: fbRes?.feedbacks || [],
+        });
+      }
+      setTaskData((prev) => ({
+        ...prev,
+        [taskId]: { submissions: submissionsWithFeedback },
+      }));
+    } catch (err) {
+      console.error("Error submitting task:", err);
+      toast.error("Failed to submit task. Please try again.");
+    }
+  };
 
   const getStatusConfig = (status) => {
     switch (status) {
@@ -115,7 +137,7 @@ const [internship, setInternship] = useState({});
     const latest = submissions[submissions.length - 1];
     const statusConfig = getStatusConfig(latest?.status);
     const isApproved = latest?.status === "approved";
-    
+    const actionText = latest?.status === "rejected" ? "Resubmit" : "Submit";
 
     if (!isGridView) {
       return (
@@ -135,11 +157,21 @@ const [internship, setInternship] = useState({});
             </span>
           </div>
           <div className="flex-shrink-0 flex items-center gap-2 mt-4 sm:mt-0 sm:ml-4">
-            {isApproved && (
+            {isApproved ? (
               <span className="text-sm font-medium text-emerald-500 flex items-center gap-1">
                 <Check className="h-4 w-4" /> Completed!
               </span>
-            ) }
+            ) : (
+              <button
+                className="flex items-center gap-1 px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-blue-700 transition"
+                onClick={() => {
+                  setSelectedTask(task);
+                  setOpenSubmit(true);
+                }}
+              >
+                <RotateCcw className="h-4 w-4" /> {actionText}
+              </button>
+            )}
             {submissions.length > 0 && (
               <button
                 className="text-sm text-white font-medium hover:text-gray-200 transition"
@@ -176,11 +208,21 @@ const [internship, setInternship] = useState({});
           </span>
         </div>
         <div className="flex justify-between items-center mt-auto">
-          {isApproved && (
+          {isApproved ? (
             <span className="text-sm font-medium text-emerald-500 flex items-center gap-1">
               <Check className="h-4 w-4" /> Completed!
             </span>
-          ) }
+          ) : (
+            <button
+              className="flex items-center gap-1 px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              onClick={() => {
+                setSelectedTask(task);
+                setOpenSubmit(true);
+              }}
+            >
+              <RotateCcw className="h-4 w-4" /> {actionText}
+            </button>
+          )}
           {submissions.length > 0 && (
             <button
               className="text-sm text-white font-medium hover:text-gray-200 transition"
@@ -255,10 +297,10 @@ const [internship, setInternship] = useState({});
         <header className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-50">
-              {user.name}'s Tasks for {internship?.title}
+              My Tasks 🚀
             </h1>
             <p className="text-zinc-400 mt-2 text-sm sm:text-base">
-            Here is your Task Summary for the internship 
+              View and manage your assigned tasks, and track your progress.
             </p>
           </div>
           <div className="flex items-center space-x-2 p-1 rounded-lg bg-zinc-800 border border-zinc-700">
@@ -297,7 +339,71 @@ const [internship, setInternship] = useState({});
 
         {selectedTask && (
           <>
-
+            <Modal
+              isOpen={openSubmit}
+              onClose={() => setOpenSubmit(false)}
+              title={`Submit Task: ${selectedTask.title}`}
+            >
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="github"
+                    className="block text-sm font-medium text-zinc-300 mb-1"
+                  >
+                    GitHub Repository URL <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative mt-1 rounded-md shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <Github className="h-5 w-5 text-zinc-400" aria-hidden="true" />
+                    </div>
+                    <input
+                      id="github"
+                      type="url"
+                      required
+                      value={githubRepoUrl}
+                      onChange={(e) => setGithubRepoUrl(e.target.value)}
+                      className="block w-full rounded-md border-zinc-700 bg-zinc-900 text-zinc-100 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 transition"
+                      placeholder="https://github.com/username/repo-name"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="linkedin"
+                    className="block text-sm font-medium text-zinc-300 mb-1"
+                  >
+                    LinkedIn Post URL (optional)
+                  </label>
+                  <div className="relative mt-1 rounded-md shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <Linkedin className="h-5 w-5 text-zinc-400" aria-hidden="true" />
+                    </div>
+                    <input
+                      id="linkedin"
+                      type="url"
+                      value={linkedinPostUrl}
+                      onChange={(e) => setLinkedinPostUrl(e.target.value)}
+                      className="block w-full rounded-md border-zinc-700 bg-zinc-900 text-zinc-100 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 transition"
+                      placeholder="https://linkedin.com/posts/..."
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setOpenSubmit(false)}
+                  className="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleSubmit(selectedTask._id)}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Submit
+                </button>
+              </div>
+            </Modal>
             
             <Modal
               isOpen={openHistory}

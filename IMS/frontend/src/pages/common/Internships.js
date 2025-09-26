@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { internshipService } from "../services/internshipService";
+import { useAuth } from "../../contexts/AuthContext";
+import { internshipService } from "../../services/internshipService";
 import toast from "react-hot-toast";
 import {
   BuildingOfficeIcon,

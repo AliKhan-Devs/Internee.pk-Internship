@@ -7,25 +7,25 @@ import ProtectedRoute from './components/ProtectedRoute';
 import TestTailwind from './TestTailwind';
 
 // Pages
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Internships from './pages/Internships';
-import InternshipDetail from './pages/InternshipDetail';
-import CreateInternship from './pages/CreateInternship';
-import Applications from './pages/Applications';
-import MyApplications from './pages/MyApplications';
-import Users from './pages/Users';
-import Tasks from './pages/Tasks';
-import MyTasks from './pages/MyTasks';
-import Feedback from './pages/Feedback';
-import CreateAdmin from './pages/CreateAdmin';
-import Profile from './pages/Profile';
-import InternshipTaskDetails from './pages/TaskDetailPage';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Dashboard from './pages/common/Dashboard';
+import Internships from './pages/common/Internships';
+import InternshipDetail from './pages/common/InternshipDetail';
+import CreateInternship from './pages/admin/CreateInternship';
+import Applications from './pages/admin/Applications';
+import MyApplications from './pages/user/MyApplications';
+import Users from './pages/admin/Users';
+import Tasks from './pages/admin/Tasks';
+import MyTasks from './pages/user/MyTasks';
+import Feedback from './pages/admin/Feedback';
+import CreateAdmin from './pages/admin/CreateAdmin';
+import Profile from './pages/common/Profile';
+import InternshipTaskDetails from './pages/user/TaskDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PublicLayout from './components/Layout/PublicLayout';
 import Home from './pages/Home';
-import SeeUserTask from './pages/SeeUserTask';
+import SeeUserTask from './pages/admin/SeeUserTask';
 
 function App() {
   return (
