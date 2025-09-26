@@ -17,7 +17,7 @@ It provides a secure REST API built with **Node.js, Express, and MongoDB**, hand
 ---
 
 ## 🏗️ Folder Structure
-
+```
 backend/
 │
 ├── server.js # Entry point for the application
@@ -65,7 +65,7 @@ backend/
 │
 └── package.json
 
-
+```
 
 ---
 
