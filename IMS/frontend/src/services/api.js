@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000'; // Adjust port based on your backend
+const API_BASE_URL = 'https://ims-backend-latest-s78a.onrender.com'; 
 
 const api = axios.create({
   baseURL: API_BASE_URL,
