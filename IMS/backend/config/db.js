@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config'; 
 
 const DB_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/IMS';
-
 const dbConnect = async ()=>{
     try {
+        console.log(DB_URI);
         await mongoose.connect(DB_URI);
         console.log('Mongo DB Connected Successfully')
     } catch (error) {
