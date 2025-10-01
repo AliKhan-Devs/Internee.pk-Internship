@@ -32,6 +32,4 @@ jobs:
           docker push alikhandevs/ims-backend:latest
           docker push alikhandevs/ims-backend:${{ steps.vars.outputs.sha_short }}
 
-      - name: Trigger Render backend deploy
-        run: |
-          curl -X POST ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
+      
