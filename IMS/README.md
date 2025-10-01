@@ -36,6 +36,7 @@ It follows a complete **Software Development Life Cycle (SDLC)** approach — st
 ## 📂 Project Structure
 - **IMS/frontend** → React + Tailwind app (Admin & Intern dashboards)  
 - **IMS/backend** → Node.js + Express backend with MongoDB models and APIs 
+- **IMS/docker-compose.yaml** → use command docker-compose up --build to run both frontend and backend. (backend will run inside a docker container)
 - **IMS/SDLC** → Software Development Life Cycle (SRS → Design → Implementation → Testing → Documentation) 
 
 (Each folder has its own README for setup and usage instructions.)  

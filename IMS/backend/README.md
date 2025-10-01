@@ -62,7 +62,8 @@ backend/
 │ ├── generateHash.js
 │ └── generateToken.js
 │ └── handleApply.js (This function checks user record to prevent and make sure that user is enrolled in only one internship at a time)
-│
+├── Dockerfile (contains a docker file which can be used for creating a docker image)
+├── docker-composefile (this file can be used to run both frontend and backend combinly)
 └── package.json
 
 ```
