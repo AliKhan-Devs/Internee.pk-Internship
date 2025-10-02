@@ -1,10 +1,9 @@
-// src/pages/ViewPortfolio.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "@/utils/api";
 
 // =====================================
-// ICON FIX: Replaced react-icons/fa with inline SVGs
+// ICON DEFINITIONS (Kept as is for brevity)
 // =====================================
 
 const GithubIcon = (props) => (
@@ -51,6 +50,22 @@ const ExternalLinkIcon = (props) => (
   </svg>
 );
 
+const socialIcons = {
+  github: GithubIcon,
+  linkedin: LinkedinIcon,
+  twitter: TwitterIcon,
+  youtube: YoutubeIcon,
+  facebook: FacebookIcon,
+  instagram: InstagramIcon,
+};
+
+const getSocialIcon = (name) => {
+  return socialIcons[name.toLowerCase()] || ExternalLinkIcon;
+};
+
+// =====================================
+// MAIN COMPONENT LOGIC
+// =====================================
 
 export default function ViewPortfolio() {
   const { username } = useParams();
@@ -80,7 +95,7 @@ export default function ViewPortfolio() {
   const profileHero = portfolio.profileIds.find((p) => p.type === "hero");
   const profileAbout = portfolio.profileIds.find((p) => p.type === "about");
   
-  // Dynamic Section Data Extraction (Handles non-existent sections gracefully)
+  // Dynamic Section Data Extraction
   const getSectionData = (type) => portfolio.overviewIds.find((o) => o.type === type) || {};
 
   const statsData = getSectionData("stats");
@@ -102,57 +117,100 @@ export default function ViewPortfolio() {
   // Destructure Theme Colors and Styles (UPDATED)
   // =====================================
   const {
-    primaryColor: primary,
-    secondaryColor: secondary,
-    accentColor: accent, // NEW
-    backgroundColor: background,
-    cardBackgroundColor: cardBg,
-    textPrimaryColor: textPrimary,
-    textSecondaryColor: textSecondary,
-    // primaryHoverColor is not used for inline style complexity, relying on hover:opacity-85
+    primaryColor: primary, // Primary used for accents or secondary text now
+    secondaryColor: secondary, // Strong accent color
+    accentColor: accent, // High-contrast highlight color (e.g., timeline dot)
+    backgroundColor: background, // Main page background
+    cardBackgroundColor: cardBg, // Background for lifted elements
+    textPrimaryColor: textPrimary, // Main text color
+    textSecondaryColor: textSecondary, // Muted text color
+    primaryHoverColor: primaryHover, // Button/element hover color
+    borderColor: borderCol,
     
     // Typography & Layout
-    fontFamily: fontFam, // NEW: 'Inter, sans-serif'
-    headingWeight: hWeight, // UPDATED: 'font-extrabold'
-    sectionSpacing: sectionPad, // NEW: 'py-24'
-    containerWidth: containerMaxW, // NEW: 'max-w-7xl'
+    fontFamily: fontFam, 
+    headingWeight: hWeight, 
+    sectionSpacing: sectionPad, 
+    containerWidth: containerMaxW, 
     
     // Interaction/Style
-    cardBorderRadius: cardRadius, // NEW: '1rem'
-    // shadowIntensity: cardShadow, // Not used, relying on hardcoded Tailwind class in JSX
-    transitionDuration: transitionD, // NEW: 'duration-300'
+    cardBorderRadius: cardRadius, 
+    shadowIntensity: cardShadow, 
+    transitionDuration: transitionD, 
     buttonStyle: btnStyle,
-    buttonShadowStyle: btnShadow, // NEW: 'hover:shadow-lg'
+    buttonShadowStyle: btnShadow,
   } = theme;
   
   // Fallback values for new optional props
-  const defaultContainerW = "max-w-6xl";
-  const defaultSectionPad = "py-16 md:py-24";
-  const defaultCardRadius = "0.75rem"; // rounded-xl
+  const defaultContainerW = "max-w-7xl";
+  const defaultSectionPad = "py-16 md:py-28";
+  const defaultCardRadius = "0.75rem";
   const defaultTransitionD = "duration-300";
+  const defaultShadow = "shadow-xl";
 
-  // Helper function for Section Headers (UPDATED)
+  // Helper function for Section Headers
   const SectionHeader = ({ title, tagline, description }) => (
     <div className="text-center mb-16 max-w-3xl mx-auto">
-      <h2 className={`text-3xl sm:text-4xl lg:text-5xl ${hWeight || 'font-extrabold'} mb-3`} style={{ color: textPrimary }}>
+      <h2 className={`text-4xl sm:text-5xl lg:text-6xl ${hWeight || 'font-extrabold'} mb-3`} style={{ color: textPrimary }}>
         {title || "Section Title"}
       </h2>
-      {tagline && <p className="text-lg font-semibold mb-4" style={{ color: textSecondary }}>{tagline}</p>}
-      {description && <p className="text-base leading-relaxed" style={{ color: textSecondary }}>{description}</p>}
+      {tagline && <p className="text-xl font-semibold mb-4" style={{ color: secondary }}>{tagline}</p>}
+      {description && <p className={`text-base ${theme.bodySize || 'text-lg'} ${theme.lineHeightBase || 'leading-relaxed'}`} style={{ color: textSecondary }}>{description}</p>}
     </div>
   );
+  
+  // Reusable Button Component (Professional Style)
+  const Button = ({ children, href, type = 'primary' }) => {
+    const isPrimary = type === 'primary';
+    
+    const style = {
+      // Background and Text color logic
+      backgroundColor: isPrimary ? secondary : cardBg,
+      color: isPrimary ? cardBg : textPrimary, // Invert text color for primary button
+      
+      // Border and Hover logic
+      border: isPrimary ? 'none' : `1px solid ${secondary}`,
+      borderRadius: btnStyle === "pill" ? "9999px" : cardRadius || "8px",
+      
+      // Custom hover style for professional feel (lifting, color change)
+      '--hover-bg': isPrimary ? primaryHover : primary,
+      '--hover-text': isPrimary ? cardBg : textPrimary,
+    };
+    
+    // Inline style with custom properties for a more professional hover look
+    // Using a dynamic hover class/style here is tricky with inline styles,
+    // so we'll use a `className` that simulates a lifted effect and the default opacity.
+    
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className={`
+          px-7 py-3 font-semibold text-base transition 
+          ${transitionD || defaultTransitionD} ease-in-out 
+          ${btnShadow || 'hover:shadow-xl'} 
+          transform hover:translate-y-[-2px]
+        `}
+        style={style}
+      >
+        {children}
+      </a>
+    );
+  };
+
 
   return (
     <div 
-      className={`w-full min-h-screen ${fontFam ? `font-[${fontFam}]` : 'font-sans'}`}
-      style={{ backgroundColor: background, color: textPrimary }}
+      className={`w-full min-h-screen ${fontFam ? `font-[${fontFam}]` : 'font-sans'} ${theme.bodySize || 'text-lg'}`}
+      style={{ backgroundColor: background, color: textPrimary, lineHeight: theme.lineHeightBase || '1.7' }}
     >
       
       {/* ======================================= */}
-      {/* ===== 1. Hero Section (Updated) ===== */}
+      {/* ===== 1. Hero Section (Clean & Bold) ===== */}
       {/* ======================================= */}
       {profileHero && (
-        <section className={`${sectionPad || defaultSectionPad} px-4`}>
+        <section className={`${sectionPad || defaultSectionPad} px-4 pt-16`}>
           <div className={`container mx-auto ${containerMaxW || defaultContainerW}`}>
             <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16">
               
@@ -163,59 +221,51 @@ export default function ViewPortfolio() {
                 <img 
                   src={profileHero.profileImg} 
                   alt="Profile Hero" 
-                  className={`rounded-full w-56 h-56 object-cover mb-6 border-4 md:hidden shadow-xl ${transitionD || defaultTransitionD}`}
+                  className={`rounded-full w-48 h-48 object-cover mb-8 border-4 md:hidden ${cardShadow || defaultShadow} ${transitionD || defaultTransitionD}`}
                   style={{ borderColor: secondary }} 
                 />
                 
-                <h1 className={`text-3xl sm:text-4xl lg:text-5xl ${hWeight || 'font-extrabold'} mb-3`} style={{ color: textPrimary }}>
+                <h1 className={`text-4xl sm:text-5xl lg:text-7xl ${hWeight || 'font-extrabold'} mb-4`} style={{ color: textPrimary }}>
                   {profileHero.heading}
                 </h1>
                 
-                <p className="text-lg sm:text-xl font-medium mb-4" style={{ color: textSecondary }}>
+                <p className="text-xl sm:text-2xl font-medium mb-6" style={{ color: secondary }}>
                   {profileHero.tagline}
                 </p>
                 
-                <p className="max-w-xl mb-8 leading-relaxed" style={{ color: textSecondary }}>
+                <p className={`max-w-xl mb-10 ${theme.lineHeightBase || 'leading-relaxed'}`} style={{ color: textSecondary }}>
                   {profileHero.description}
                 </p>
                 
-                {/* Buttons (Updated) */}
+                {/* Buttons */}
                 <div className="flex gap-4 flex-wrap justify-center md:justify-start">
                   {profileHero.buttons?.map((btn) => (
-                    <a
-                      key={btn._id}
-                      href={btn.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`px-6 py-3 font-semibold text-sm transition ${transitionD || defaultTransitionD} ease-in-out hover:opacity-85 ${btnShadow || 'hover:shadow-lg'}`}
-                      style={{
-                        backgroundColor: primary,
-                        color: textPrimary,
-                        borderRadius: btnStyle === "rounded" ? "9999px" : cardRadius || "8px",
-                      }}
-                    >
+                    <Button key={btn._id} href={btn.link} type="primary">
                       {btn.text}
-                    </a>
+                    </Button>
                   ))}
                 </div>
               </div>
               
               {/* Profile Image - Right/Bottom (Hidden on small screens) */}
               <div className="md:w-1/2 flex justify-center md:justify-end order-1 md:order-2">
-                <img 
-                  src={profileHero.profileImg} 
-                  alt="Profile Hero" 
-                  className={`rounded-full w-96 h-96 sm:w-96 sm:h-96 object-cover border-4 hidden md:block shadow-2xl ${transitionD || defaultTransitionD}`} 
-                  style={{ borderColor: secondary }} 
-                />
+                <div className={`p-2 border-4 ${cardShadow || defaultShadow} hidden md:block`} style={{ borderColor: accent || secondary, borderRadius: '50%' }}>
+                  <img 
+                    src={profileHero.profileImg} 
+                    alt="Profile Hero" 
+                    className={`rounded-full w-96 h-96 object-cover ${transitionD || defaultTransitionD}`} 
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
       )}
 
+      ---
+
       {/* ======================================= */}
-      {/* ===== 2. About Section (Updated) ===== */}
+      {/* ===== 2. About Section (Clean Layout) ===== */}
       {/* ======================================= */}
       {profileAbout && (
         <section className={`${sectionPad || defaultSectionPad} px-4`}>
@@ -227,7 +277,7 @@ export default function ViewPortfolio() {
                 <img 
                   src={profileAbout.profileImg} 
                   alt="About Profile" 
-                  className={`w-full max-w-sm h-auto object-cover shadow-2xl transition-transform ${transitionD || defaultTransitionD} hover:scale-[1.02]`}
+                  className={`w-full max-w-md h-auto object-cover ${cardShadow || defaultShadow} transition-transform ${transitionD || defaultTransitionD} hover:scale-[1.02]`}
                   style={{ borderRadius: cardRadius || defaultCardRadius }} 
                 />
               </div>
@@ -237,30 +287,19 @@ export default function ViewPortfolio() {
                 <h2 className={`text-3xl sm:text-4xl lg:text-5xl ${hWeight || 'font-extrabold'} mb-3`} style={{ color: textPrimary }}>
                   {profileAbout.heading}
                 </h2>
-                <p className="text-lg sm:text-xl font-semibold mb-6" style={{ color: textSecondary }}>
+                <p className="text-xl font-semibold mb-6" style={{ color: secondary }}>
                   {profileAbout.tagline}
                 </p>
-                <p className="text-base leading-relaxed mb-8 max-w-xl md:max-w-none" style={{ color: textSecondary }}>
+                <p className={`${theme.bodySize || 'text-lg'} leading-relaxed mb-8 max-w-xl md:max-w-none`} style={{ color: textSecondary }}>
                   {profileAbout.description}
                 </p>
                 
-                {/* Buttons (Updated) */}
+                {/* Buttons */}
                 <div className="mt-4 flex gap-4 flex-wrap justify-center md:justify-start">
                   {profileAbout.buttons?.map((btn) => (
-                    <a
-                      key={btn._id}
-                      href={btn.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`px-5 py-2.5 font-medium text-base transition ${transitionD || defaultTransitionD} ease-in-out hover:opacity-85 ${btnShadow || 'hover:shadow-lg'}`}
-                      style={{
-                        backgroundColor: primary,
-                        color: textPrimary,
-                        borderRadius: btnStyle === "rounded" ? "9999px" : cardRadius || "8px",
-                      }}
-                    >
+                    <Button key={btn._id} href={btn.link} type="secondary">
                       {btn.text}
-                    </a>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -269,11 +308,13 @@ export default function ViewPortfolio() {
         </section>
       )}
 
+      ---
+
       {/* ======================================== */}
-      {/* ===== 3. Stats Section (Updated) ===== */}
+      {/* ===== 3. Stats Section (Card Focused) ===== */}
       {/* ======================================== */}
       {stats.length > 0 && (
-        <section className={`${sectionPad || defaultSectionPad} px-4`} style={{ backgroundColor: secondary + '04' }}>
+        <section className={`${sectionPad || defaultSectionPad} px-4`} style={{ backgroundColor: primary + '05' }}>
           <div className={`container mx-auto ${containerMaxW || defaultContainerW}`}>
             
             <SectionHeader 
@@ -282,21 +323,18 @@ export default function ViewPortfolio() {
               description={statsData.description} 
             />
             
-            <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
               {stats.map((card) => (
                 <div 
                   key={card._id} 
-                  className={`flex flex-col items-center justify-center text-center p-6 md:p-8 shadow-xl transition ${transitionD || defaultTransitionD} transform hover:scale-[1.03] hover:shadow-2xl`} 
+                  className={`flex flex-col items-center justify-center text-center p-6 md:p-8 ${cardShadow || defaultShadow} transition ${transitionD || defaultTransitionD} transform hover:scale-[1.05]`} 
                   style={{ 
-                    backgroundColor: primary,
-                    minWidth: "160px", 
-                    maxWidth: "280px", 
-                    flexGrow: 1, 
-                    border: `2px solid ${secondary + '30'}`,
-                    borderRadius: cardRadius || defaultCardRadius, // Apply card radius
+                    backgroundColor: cardBg,
+                    border: `1px solid ${borderCol}`,
+                    borderRadius: cardRadius || defaultCardRadius,
                   }}
                 >
-                  <p className="text-4xl md:text-5xl font-black mb-1 leading-tight" style={{ color: textPrimary }}>
+                  <p className="text-4xl md:text-5xl font-black mb-1 leading-tight" style={{ color: secondary }}>
                     {card.title}
                   </p>
                   <p className="text-sm uppercase tracking-widest font-semibold" style={{ color: textSecondary }}>
@@ -309,8 +347,10 @@ export default function ViewPortfolio() {
         </section>
       )}
 
+      ---
+
       {/* =========================================== */}
-      {/* ===== 4. Services Section (Updated) ===== */}
+      {/* ===== 4. Services Section (Clean Blocks) ===== */}
       {/* =========================================== */}
       {services.length > 0 && (
         <section className={`${sectionPad || defaultSectionPad} px-4`}>
@@ -322,53 +362,48 @@ export default function ViewPortfolio() {
               description={servicesData.description} 
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-x-16 md:gap-y-12">
-              {services.map((service, idx) => {
-                const isLeft = idx % 2 === 0;
-
-                return (
-                  <div 
-                    key={service._id} 
-                    className={`
-                      p-8 shadow-xl transition-transform ${transitionD || defaultTransitionD} hover:scale-[1.02] h-full
-                      flex flex-col
-                    `}
-                    style={{ 
-                      backgroundColor: primary, 
-                      border: `1px solid ${secondary + '40'}`,
-                      borderRadius: cardRadius || defaultCardRadius, // Apply card radius
-                    }}
-                  >
-                    {/* Icon - Uses margin auto for alignment based on card position */}
-                    {service.icon && (
-                      <div 
-                        className={`text-4xl mb-4 ${isLeft ? 'mr-0 ml-auto md:ml-0' : 'ml-0 mr-auto md:mr-0'} flex-shrink-0`}
-                        style={{ color: textPrimary }} 
-                      >
-                        {service.icon}
-                      </div>
-                    )}
-                    
-                    <h3 className="text-2xl font-bold mb-3" style={{ color: textPrimary }}>
-                      {service.title}
-                    </h3>
-                    
-                    <p className="flex-grow" style={{ color: textSecondary }}>
-                      {service.description}
-                    </p>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service) => (
+                <div 
+                  key={service._id} 
+                  className={`p-8 ${cardShadow || defaultShadow} transition-transform ${transitionD || defaultTransitionD} hover:scale-[1.02] h-full flex flex-col`}
+                  style={{ 
+                    backgroundColor: cardBg, 
+                    border: `1px solid ${borderCol}`,
+                    borderRadius: cardRadius || defaultCardRadius, 
+                  }}
+                >
+                  {/* Icon - Use primary/accent color for pop */}
+                  {service.icon && (
+                    <div 
+                      className={`text-4xl mb-4 w-12 h-12 flex items-center justify-center rounded-full`}
+                      style={{ color: cardBg, backgroundColor: secondary, }} 
+                    >
+                      {service.icon}
+                    </div>
+                  )}
+                  
+                  <h3 className="text-2xl font-bold mb-3" style={{ color: textPrimary }}>
+                    {service.title}
+                  </h3>
+                  
+                  <p className="flex-grow" style={{ color: textSecondary }}>
+                    {service.description}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
       )}
       
+      ---
+
       {/* =========================================== */}
-      {/* ===== 5. Projects Section (Updated) ===== */}
+      {/* ===== 5. Projects Section (Image Focus) ===== */}
       {/* =========================================== */}
       {projects.length > 0 && (
-        <section className={`${sectionPad || defaultSectionPad} px-4`} style={{ backgroundColor: secondary + '04' }}>
+        <section className={`${sectionPad || defaultSectionPad} px-4`} style={{ backgroundColor: primary + '05' }}>
             <div className={`container mx-auto ${containerMaxW || defaultContainerW}`}>
               <SectionHeader 
                 title={projectsData.title} 
@@ -376,12 +411,12 @@ export default function ViewPortfolio() {
                 description={projectsData.description} 
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {projects.map((project) => (
                   <div 
                     key={project._id} 
-                    className={`flex flex-col shadow-2xl overflow-hidden transition-transform ${transitionD || defaultTransitionD} hover:scale-[1.02] hover:shadow-3xl`} 
-                    style={{ backgroundColor: primary, borderRadius: cardRadius || defaultCardRadius }} 
+                    className={`flex flex-col ${cardShadow || defaultShadow} overflow-hidden transition-transform ${transitionD || defaultTransitionD} hover:scale-[1.02]`} 
+                    style={{ backgroundColor: cardBg, borderRadius: cardRadius || defaultCardRadius }} 
                   >
                     {/* Project Image */}
                     {project.imgUrl && (
@@ -389,7 +424,7 @@ export default function ViewPortfolio() {
                             <img 
                                 src={project.imgUrl} 
                                 alt={project.title} 
-                                className={`w-full h-full object-cover transition-transform ${transitionD || defaultTransitionD} hover:scale-110`} 
+                                className={`w-full h-full object-cover transition-transform ${transitionD || defaultTransitionD} hover:scale-105`} 
                             />
                         </div>
                     )}
@@ -403,23 +438,23 @@ export default function ViewPortfolio() {
                           {project.description}
                       </p>
                       
-                      {/* Buttons/Links */}
+                      {/* Buttons/Links (Secondary look for smaller project links) */}
                       <div className="mt-auto flex flex-wrap gap-3">
                         {project.buttons?.map((btn) => (
                             <a 
-                                key={btn._id} 
-                                href={btn.link} 
-                                target="_blank" 
-                                rel="noreferrer" 
-                                className={`px-4 py-2 font-medium text-sm flex items-center gap-2 transition ${transitionD || defaultTransitionD} hover:opacity-90`} 
-                                style={{ 
-                                    backgroundColor: secondary, 
-                                    color: textPrimary,
-                                    borderRadius: btnStyle === "rounded" ? "9999px" : "6px" 
-                                }}
+                              key={btn._id} 
+                              href={btn.link} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              className={`px-4 py-2 font-medium text-sm flex items-center gap-2 transition ${transitionD || defaultTransitionD} hover:opacity-90`} 
+                              style={{ 
+                                  backgroundColor: primary, 
+                                  color: textPrimary,
+                                  borderRadius: btnStyle === "pill" ? "9999px" : "6px" 
+                              }}
                             >
-                                {btn.text}
-                                <ExternalLinkIcon className="w-3 h-3"/>
+                              {btn.text}
+                              <ExternalLinkIcon className="w-3 h-3" style={{ stroke: textPrimary }}/>
                             </a>
                         ))}
                       </div>
@@ -431,8 +466,10 @@ export default function ViewPortfolio() {
         </section>
       )}
 
+      ---
+
       {/* ============================================= */}
-      {/* ===== 6. Skills Section (Updated) ===== */}
+      {/* ===== 6. Skills Section (Pill Tags) ===== */}
       {/* ============================================= */}
       {skills.length > 0 && (
         <section className={`${sectionPad || defaultSectionPad} px-4`}>
@@ -444,16 +481,15 @@ export default function ViewPortfolio() {
               description={skillsData.description} 
             />
             
-            <div className="flex flex-wrap gap-4 md:gap-6 justify-center">
+            <div className="flex flex-wrap gap-3 md:gap-4 justify-center max-w-4xl mx-auto">
               {skills.map((skill) => (
                 <div 
                   key={skill._id} 
-                  className={`px-6 py-3 text-lg font-medium shadow-md transition-all ${transitionD || defaultTransitionD} transform hover:scale-[1.05] hover:shadow-lg cursor-default`} 
+                  className={`px-5 py-2 text-base font-medium shadow-md transition-all ${transitionD || defaultTransitionD} transform hover:scale-[1.05] cursor-default`} 
                   style={{ 
-                    backgroundColor: primary,
-                    color: textPrimary,
-                    border: `1px solid ${secondary + '40'}`,
-                    borderRadius: btnStyle === "rounded" ? "9999px" : cardRadius || "8px", // Using cardRadius for pills
+                    backgroundColor: accent || secondary, // Use accent for skill tags
+                    color: background, // High-contrast text on accent
+                    borderRadius: "9999px", // Always pill shape for skills
                   }}
                 >
                   <span>{skill.title}</span>
@@ -464,11 +500,13 @@ export default function ViewPortfolio() {
         </section>
       )}
 
+      ---
+
       {/* =============================================== */}
-      {/* ===== 7. Education Section (Updated) ===== */}
+      {/* ===== 7. Education Section (Timeline) ===== */}
       {/* =============================================== */}
       {education.length > 0 && (
-        <section className={`${sectionPad || defaultSectionPad} px-4`} style={{ backgroundColor: secondary + '04' }}>
+        <section className={`${sectionPad || defaultSectionPad} px-4`} style={{ backgroundColor: primary + '05' }}>
           <div className={`container mx-auto ${containerMaxW || 'max-w-4xl'}`}>
             
             <SectionHeader 
@@ -482,29 +520,32 @@ export default function ViewPortfolio() {
                 <div key={edu._id} className="relative">
                   {/* Timeline Dot/Icon (Using accentColor for pop) */}
                   <div 
-                    className="absolute -left-10 md:-left-12 top-0 w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
+                    className="absolute -left-10 md:-left-12 top-0 w-8 h-8 rounded-full flex items-center justify-center shadow-lg"
                     style={{ 
-                      backgroundColor: accent || primary, // Use ACCENT color
-                      border: `3px solid ${secondary}`,
-                      color: textPrimary
+                      backgroundColor: secondary,
+                      border: `4px solid ${background}`,
+                      color: background
                     }}
                   >
-                    <span className="text-xs font-bold">{index + 1}</span>
+                    <span className="text-sm font-black">🎓</span>
                   </div>
 
-                  {/* Education Content Card (Updated) */}
+                  {/* Education Content Card (Clean and Elevated) */}
                   <div 
-                    className={`p-6 shadow-xl transition-transform ${transitionD || defaultTransitionD} transform hover:translate-y-[-4px]`} 
+                    className={`p-6 ${cardShadow || defaultShadow} transition-transform ${transitionD || defaultTransitionD} transform hover:scale-[1.01]`} 
                     style={{ 
-                      backgroundColor: primary,
-                      borderRadius: cardRadius || defaultCardRadius, // Apply card radius
-                      borderBottom: `4px solid ${secondary}`,
+                      backgroundColor: cardBg,
+                      borderRadius: cardRadius || defaultCardRadius, 
+                      borderLeft: `4px solid ${accent || secondary}`, // Accent stripe
                     }}
                   >
+                    <p className="text-sm font-medium mb-1" style={{ color: secondary }}>
+                      {edu.startDate} - {edu.endDate}
+                    </p>
                     <h3 className="text-xl md:text-2xl font-bold mb-1 leading-snug" style={{ color: textPrimary }}>
                       {edu.title}
                     </h3>
-                    <p className="text-base font-medium mb-3" style={{ color: textSecondary }}>
+                    <p className="text-base font-medium" style={{ color: textSecondary }}>
                       {edu.description}
                     </p>
                   </div>
@@ -515,8 +556,10 @@ export default function ViewPortfolio() {
         </section>
       )}
 
+      ---
+
       {/* ================================================= */}
-      {/* ===== 8. Certificates Section (Updated) ===== */}
+      {/* ===== 8. Certificates Section (Card Grid) ===== */}
       {/* ================================================= */}
       {certificates.length > 0 && (
         <section className={`${sectionPad || defaultSectionPad} px-4`}>
@@ -531,16 +574,16 @@ export default function ViewPortfolio() {
                 {certificates.map((cert) => (
                   <div 
                     key={cert._id} 
-                    className={`flex flex-col p-6 shadow-2xl transition-transform ${transitionD || defaultTransitionD} transform hover:scale-[1.02] hover:shadow-3xl`} 
-                    style={{ backgroundColor: primary, borderRadius: cardRadius || defaultCardRadius }
+                    className={`flex flex-col p-6 ${cardShadow || defaultShadow} transition-transform ${transitionD || defaultTransitionD} transform hover:scale-[1.02]`} 
+                    style={{ backgroundColor: cardBg, borderRadius: cardRadius || defaultCardRadius }
                   }>
                     {/* Certificate Image/Preview */}
                     {cert.imgUrl && (
-                      <div className="mb-4 overflow-hidden shadow-lg aspect-video" style={{ borderRadius: cardRadius || defaultCardRadius }}>
+                      <div className="mb-4 overflow-hidden shadow-lg aspect-video" style={{ borderRadius: '6px' }}>
                         <img 
                           src={cert.imgUrl} 
                           alt={cert.title} 
-                          className={`w-full h-full object-cover transition-transform ${transitionD || defaultTransitionD} hover:scale-110`} 
+                          className={`w-full h-full object-cover transition-transform ${transitionD || defaultTransitionD} hover:scale-105`} 
                         />
                       </div>
                     )}
@@ -565,8 +608,8 @@ export default function ViewPortfolio() {
                           className={`px-5 py-2 font-medium text-sm whitespace-nowrap transition ${transitionD || defaultTransitionD} hover:opacity-90`} 
                           style={{ 
                             backgroundColor: secondary,
-                            color: textPrimary,
-                            borderRadius: btnStyle === "rounded" ? "9999px" : "6px" 
+                            color: cardBg, // White text on accent background
+                            borderRadius: btnStyle === "pill" ? "9999px" : "6px" 
                           }}
                         >
                           {btn.text}
@@ -579,22 +622,64 @@ export default function ViewPortfolio() {
             </div>
         </section>
       )}
-      
-      {/* ==================================== */}
-      {/* ===== 9. Footer (Updated) ===== */}
-      {/* ==================================== */}
-      <footer className="py-12 px-4 mt-16 text-center border-t" style={{ backgroundColor: cardBg, borderColor: secondary + '40' }}>
-        <p className="mb-4 text-lg font-medium" style={{ color: textSecondary }}>Connect with me:</p>
-        <div className="flex justify-center gap-6 text-2xl">
-          {contact?.linkedinUrl && <a href={contact.linkedinUrl} target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity w-6 h-6" style={{ color: primary }} aria-label="LinkedIn"><LinkedinIcon /></a>}
-          {contact?.githubUrl && <a href={contact.githubUrl} target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity w-6 h-6" style={{ color: primary }} aria-label="GitHub"><GithubIcon /></a>}
-          {contact?.twitterUrl && <a href={contact.twitterUrl} target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity w-6 h-6" style={{ color: primary }} aria-label="Twitter"><TwitterIcon /></a>}
-          {contact?.youtubeUrl && <a href={contact.youtubeUrl} target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity w-6 h-6" style={{ color: primary }} aria-label="YouTube"><YoutubeIcon /></a>}
-          {contact?.facebookUrl && <a href={contact.facebookUrl} target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity w-6 h-6" style={{ color: primary }} aria-label="Facebook"><FacebookIcon /></a>}
-          {contact?.instaUrl && <a href={contact.instaUrl} target="_blank" rel="noreferrer" className="hover:opacity-80 transition-opacity w-6 h-6" style={{ color: primary }} aria-label="Instagram"><InstagramIcon /></a>}
-        </div>
-        <p className="mt-8 text-sm" style={{ color: textSecondary }}>© {new Date().getFullYear()} {username} Portfolio. All rights reserved.</p>
-      </footer>
+
+      ---
+
+      {/* ========================================= */}
+      {/* ===== 9. Contact Section (New Footer) ===== */}
+      {/* ========================================= */}
+      {contact && (
+        <section className={`py-12 md:py-20 px-4`} style={{ backgroundColor: primary, borderTop: `1px solid ${borderCol}` }}>
+          <div className={`container mx-auto ${containerMaxW || 'max-w-4xl'} text-center`}>
+            <h2 className={`text-3xl ${hWeight || 'font-extrabold'} mb-3`} style={{ color: textPrimary }}>
+              Get In Touch
+            </h2>
+            <p className="text-lg mb-8 max-w-2xl mx-auto" style={{ color: textSecondary }}>
+              I'm currently available for new opportunities. Feel free to reach out to me via email or connect on social media.
+            </p>
+            
+            {/* Contact Details */}
+            <div className="mb-10 space-y-2">
+              {contact.email && (
+                <p className="text-xl font-medium">
+                  Email: <a href={`mailto:${contact.email}`} className="font-semibold" style={{ color: secondary }}>{contact.email}</a>
+                </p>
+              )}
+              {contact.phone && (
+                <p className="text-xl font-medium" style={{ color: textSecondary }}>
+                  Phone: {contact.phone}
+                </p>
+              )}
+            </div>
+
+            {/* Social Links */}
+            {contact.socials?.length > 0 && (
+              <div className="flex justify-center gap-6 mt-6">
+                {contact.socials.map((social) => {
+                  const Icon = getSocialIcon(social.platform);
+                  return (
+                    <a 
+                      key={social._id} 
+                      href={social.link} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className={`text-2xl transition-transform ${transitionD || defaultTransitionD} hover:scale-[1.1]`}
+                      style={{ color: secondary }} 
+                      title={social.platform}
+                    >
+                      <Icon className="w-7 h-7" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+
+            <p className="mt-12 text-sm" style={{ color: textSecondary }}>
+              &copy; {new Date().getFullYear()} {portfolio.user?.username}'s Portfolio. Built with your Platform.
+            </p>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

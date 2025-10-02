@@ -1,28 +1,32 @@
 import jwt from 'jsonwebtoken'
-import User from '../../Models/User.js'
 import { configDotenv } from 'dotenv';
 configDotenv();
 
 export const protect = async (req, res, next) => {
-    try {
-        let token;
-        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-            token = req.headers.authorization.split(' ')[1];
-            const decoded = jwt.decode(token, process.env.SECRET)
-            req.user = {
-                id: decoded.id,
-                role: decoded.role
-            }
-            return next();
-        }
-        console.log(token);
-        return res.json("No authorization token provided");
-    } catch (error) {
-        console.log(error);
-        return res.json(error);
+  try {
+    let token;
+    console.log(req.cookies);
+    // ✅ Get token from HttpOnly cookie
+    if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+      console.log("token from cookies ",token)
     }
-}
 
+    if (!token) {
+      return res.status(401).json({ message: "No authorization token provided" });
+    }
+
+    // ✅ Verify token
+    const decoded = jwt.verify(token, process.env.SECRET);
+
+    // Attach user payload (id, username, etc.)
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error("Auth error:", error);
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
 
 export const allowedRoles = (roles)=>(req,res,next)=>{
     if(!req.user){

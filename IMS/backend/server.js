@@ -9,16 +9,19 @@ import tasksRoutes from './Routes/tasksRoutes.js';
 import submissionRoutes from './Routes/submissionRoutes.js';
 import feedbackRoutes from './Routes/feedbackRoutes.js';
 import cors from 'cors'
+import cookieParser from "cookie-parser"
 
 
 dotenv.config()
 
 const app = express()
 app.use(express.json());
+app.use(cookieParser());
 
 // currently allowd for all origion but can be made origion specific
-app.use(cors( {
-    origin:'*'
+app.use(cors({
+  origin: ['http://localhost:3001', 'https://ims-pi-pied.vercel.app/'], 
+  credentials: true
 }));
 
 const port = process.env.PORT;

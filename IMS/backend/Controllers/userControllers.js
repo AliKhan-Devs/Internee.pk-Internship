@@ -45,10 +45,16 @@ export const loginUser = async (req, res) => {
   if (!token) {
     return res.status(500).json('Error Occured please try agani');
   }
+   // 4. Set HttpOnly cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
 
   return res.status(200).json({ 
     message: 'Login Successfull', 
-    token: token,
     user: {
       _id: user._id,
       name: user.name,
