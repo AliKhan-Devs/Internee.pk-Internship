@@ -7,123 +7,116 @@ const themeSchema = mongoose.Schema({
     },
     
     // =====================================
-    // 🎨 Color & Depth (Existing and NEW)
+    // 🎨 Color & Depth 
     // =====================================
     primaryColor: {
-        type: String,
+        type: String, // e.g., '#1F2937' (Dark Gray/Card BG)
         required: true
     },
     secondaryColor: {
-        type: String,
+        type: String, // e.g., '#3B82F6' (Strong accent for buttons/highlights)
         required: true
     },
-    // NEW: Third, high-contrast color for highlights
     accentColor: {
-        type: String,
+        type: String, // NEW: Third, high-contrast color for minor highlights (e.g., Timeline Dots)
         required: false
     },
     backgroundColor: {
-        type: String,
+        type: String, // e.g., '#F9FAFB' (Light background)
         required: true
     },
     cardBackgroundColor: {
-        type: String,
+        type: String, // e.g., '#FFFFFF' (White for cards, distinct from main background)
         required: true
     },
     textPrimaryColor: {
-        type: String,
+        type: String, // e.g., '#111827' (Dark text for main headings)
         required: true
     },
     textSecondaryColor: {
-        type: String,
+        type: String, // e.g., '#6B7280' (Muted text for paragraphs/descriptions)
         required: true
     },
-    // NEW: Color for button/element hover state
     primaryHoverColor: {
-        type: String,
-        required: false
+        type: String, // E.g., a slightly lighter/darker shade of primary/secondary for hover
+        required: true // **Making this required for guaranteed polish**
     },
     borderColor: {
-        type: String,
+        type: String, // e.g., '#E5E7EB' (Subtle line between elements)
         required: true
     },
 
     // =====================================
-    // ✒️ Typography & Readability (Existing and NEW)
+    // ✒️ Typography & Readability
     // =====================================
-    // NEW: Primary font stack (e.g., 'Inter, sans-serif')
     fontFamily: {
-        type: String,
-        required: false
+        type: String, 
+        required: false // Stored as a CSS font-family stack: 'Inter, sans-serif'
     },
-    // Updated to be clearer/more flexible than simple size
     headingWeight: {
-        type: String,
-        required: true // Can store a Tailwind class like "font-extrabold"
+        type: String, 
+        required: true // Tailwind class: "font-extrabold" or "font-bold"
     },
     headingSize: {
-        type: String,
-        required: false // Kept for granular control if needed
+        type: String, 
+        required: false // Can store a base Tailwind class if needed: "text-5xl"
     },
     bodySize: {
-        type: String,
-        required: true
+        type: String, 
+        required: true // Tailwind class: "text-base" or "text-lg"
     },
-    // NEW: Default line height for text for better readability
     lineHeightBase: {
-        type: String,
-        required: false
+        type: String, 
+        required: false // Tailwind class: "leading-relaxed"
     },
 
     // =====================================
-    // ✨ Layout & Interactivity (Existing and NEW)
+    // ✨ Layout & Interactivity
     // =====================================
     layoutType: {
         type: String,
-        required: true
+        required: true // e.g., 'minimal' or 'detailed'
     },
-    // NEW: Standardized top/bottom padding for all sections
     sectionSpacing: {
-        type: String, // Stores Tailwind class, e.g., "py-24"
+        type: String, // Tailwind class: "py-24"
         required: false
     },
-    // NEW: Defines the max width of the main content container
     containerWidth: {
-        type: String, // Stores Tailwind class, e.g., "max-w-7xl"
+        type: String, // Tailwind class: "max-w-7xl"
         required: false
     },
-    // NEW: Standardized corner radius for all cards
     cardBorderRadius: {
         type: String,
-        required: false // Stores CSS value, e.g., "1rem"
+        required: false // CSS value, e.g., "0.5rem" or "1rem"
     },
     
     // Depth & Interaction
     shadowIntensity: {
-        type: String, // Stores Tailwind class, e.g., "shadow-2xl"
-        required: true // Replaces old 'shadowStyle'
+        type: String, // Tailwind class, e.g., "shadow-xl" or "shadow-none"
+        required: true
     },
     buttonStyle: {
         type: String, // e.g., "pill" or "square"
         required: true
     },
-    // NEW: Duration for hover transitions
     transitionDuration: {
-        type: String, // Stores Tailwind class, e.g., "duration-300"
+        type: String, // Tailwind class, e.g., "duration-300"
         required: false
     },
-    // NEW: Specific shadow style for buttons on hover
     buttonShadowStyle: {
-        type: String, // Stores Tailwind class, e.g., "hover:shadow-lg"
+        type: String, // Tailwind class, e.g., "hover:shadow-lg"
         required: false
     },
-    // NEW: Icon visual preference (e.g., 'outline', 'solid', or 'color')
     iconStyle: {
+        type: String, // e.g., 'outline', 'solid', or 'color'
+        required: false
+    },
+    // NEW: Style for secondary/outline buttons (e.g., 'border-secondary')
+    secondaryButtonStyle: { 
         type: String,
         required: false
-    },
-
-   
+    }
+    
 });
 
 const Theme = mongoose.model('Theme', themeSchema);

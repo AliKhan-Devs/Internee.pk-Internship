@@ -17,37 +17,30 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initAuth = async () => {
-      const token = localStorage.getItem('token');
-      const savedUser = localStorage.getItem('user');
-      
-      console.log('Initializing auth:', { token: !!token, savedUser: !!savedUser });
-      
-      if (token && savedUser) {
-        try {
-          const userData = JSON.parse(savedUser);
-          console.log('Parsed user data:', userData);
-          setUser(userData);
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        }
+  const initAuth = async () => {
+    try {
+      const response = await authService.getCurrentUser(); // calls /auth/me
+      if (response.user) {
+        setUser(response.user);
       }
+    } catch (error) {
+      console.log("No active session");
+      setUser(null);
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
-    initAuth();
-  }, []);
+  initAuth();
+}, []);
 
   const login = async (credentials) => {
     try {
       const response = await authService.login(credentials);
-      const { token, user: userData } = response;
+      const { user: userData } = response;
       
-      if (token && userData) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
+      if (userData) {
+        
         setUser(userData);
         
         toast.success('Login successful!');

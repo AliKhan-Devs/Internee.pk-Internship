@@ -1,74 +1,127 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { usePortfolio } from "@/context/portfolioContext";
 import api from "@/utils/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react"; // Assuming you have a standard icon library
+import { Loader2, Zap, Palette, Sun, Moon } from "lucide-react"; // Added new icons
 
-// Helper function to provide defaults for the new, optional fields
+/**
+ * Helper function to provide sensible defaults for theme attributes.
+ * Tailwind class names are used where appropriate for direct className application.
+ */
 const applyThemeDefaults = (theme) => ({
+    // Colors & Depth
+    primaryColor: '#2563EB',
+    secondaryColor: '#3B82F6',
+    accentColor: '#F59E0B',
+    backgroundColor: '#F9FAFB',
+    cardBackgroundColor: '#FFFFFF',
+    textPrimaryColor: '#111827',
+    textSecondaryColor: '#6B7280',
+    borderColor: '#E5E7EB',
+    primaryHoverColor: theme.primaryColor ? `color-mix(in srgb, ${theme.primaryColor} 90%, black)` : '#1D4ED8', // Simple color darkening fallback
+    
+    // Typography
+    fontFamily: "'Inter', sans-serif",
+    headingWeight: "font-extrabold", // Tailwind class
+    headingSize: "2.25rem", // CSS value (text-4xl equivalent)
+    bodySize: "1rem", // CSS value (text-base equivalent)
+    lineHeightBase: "1.75", // CSS value (leading-relaxed equivalent)
+    
+    // Layout & Interactivity
+    layoutType: 'detailed',
+    sectionSpacing: "py-24", // Tailwind class
+    containerWidth: "max-w-6xl", // Tailwind class
+    cardBorderRadius: "0.75rem", // CSS value
+    shadowIntensity: "shadow-xl", // Tailwind class
+    buttonStyle: "rounded", // 'pill' or 'rounded'
+    transitionDuration: "duration-300", // Tailwind class
+    buttonShadowStyle: "shadow-blue-500/50 hover:shadow-lg", // Tailwind class
+    iconStyle: "outline", // 'outline', 'solid'
+    secondaryButtonStyle: "outline", // 'outline', 'ghost', 'primary-bordered'
+    
+    // Merge defaults with theme properties (prioritizing explicit theme values)
     ...theme,
-    accentColor: theme.accentColor || theme.primaryColor,
-    primaryHoverColor: theme.primaryHoverColor || theme.primaryColor,
-    fontFamily: theme.fontFamily || "'Inter', sans-serif",
-    headingWeight: theme.headingWeight || "font-bold",
-    lineHeightBase: theme.lineHeightBase || "1.65",
-    sectionSpacing: theme.sectionSpacing || "py-16",
-    containerWidth: theme.containerWidth || "max-w-5xl",
-    cardBorderRadius: theme.cardBorderRadius || "0.5rem",
-    shadowIntensity: theme.shadowIntensity || "shadow-lg",
-    transitionDuration: theme.transitionDuration || "duration-300",
-    buttonShadowStyle: theme.buttonShadowStyle || "shadow-md hover:shadow-lg",
-    iconStyle: theme.iconStyle || "outline",
 });
+
+/**
+ * Maps theme buttonStyle to Tailwind/CSS classes.
+ * @param {'pill' | 'rounded'} style 
+ * @param {string} borderRadius 
+ * @returns {string} Tailwind class string for border radius
+ */
+const getButtonRadiusClass = (style, borderRadius) => {
+    return style === "pill" ? "rounded-full" : `rounded-[${borderRadius}]`;
+};
+
+/**
+ * Maps theme button style to inline CSS style.
+ * @param {'pill' | 'rounded'} style 
+ * @param {string} borderRadius 
+ * @returns {object} Inline style object
+ */
+const getButtonRadiusStyle = (style, borderRadius) => {
+    return {
+        borderRadius: style === "pill" ? "9999px" : borderRadius,
+    };
+};
+
+// Custom Hook to manage the fetch and status logic
+const useThemeUpdater = (currentTheme, fetchPortfolio) => {
+    const [loading, setLoading] = useState(false);
+    const [statusMessage, setStatusMessage] = useState(null);
+
+    const handleThemeSelect = useCallback(async (theme) => {
+        if (!theme || !currentTheme._id) return; // Ensure we have a theme and the ID to update
+
+        // Apply defaults before sending to ensure all new fields are present
+        const themeToUpdate = applyThemeDefaults(theme);
+        
+        setLoading(true);
+        setStatusMessage(null);
+
+        try {
+            console.log('Updating theme with:', themeToUpdate);
+            await api.put(`/theme/update-theme/${currentTheme._id}`, themeToUpdate, { withCredentials: true });
+            await fetchPortfolio(); // Sync context
+            setStatusMessage({ type: 'success', text: "Theme updated successfully! Preview and context synced." });
+        } catch (err) {
+            console.error("Failed to update theme", err);
+            setStatusMessage({ type: 'error', text: "Failed to update theme. Please check your network or API status." });
+        } finally {
+            setLoading(false);
+            setTimeout(() => setStatusMessage(null), 5000);
+        }
+    }, [currentTheme._id, fetchPortfolio]);
+
+    return { loading, statusMessage, handleThemeSelect, setStatusMessage };
+};
+
 
 export default function ThemeSelector() {
     const { portfolio, fetchPortfolio } = usePortfolio();
-    const currentTheme = applyThemeDefaults(portfolio?.themeId || {}); // Apply defaults to current theme
+    
+    // Use portfolio?.themeId for the actual current theme state, apply defaults only on render if needed
+    const portfolioTheme = portfolio?.themeId ? applyThemeDefaults(portfolio.themeId) : applyThemeDefaults({});
+    
+    const [selectedTheme, setSelectedTheme] = useState(portfolioTheme);
+    
+    const { loading, statusMessage, handleThemeSelect } = useThemeUpdater(portfolioTheme, fetchPortfolio);
 
-    const [loading, setLoading] = useState(false);
-    const [statusMessage, setStatusMessage] = useState(null);
-    const [selectedTheme, setSelectedTheme] = useState(currentTheme);
-
+    // Sync state when portfolio theme changes (e.g., after a successful save)
     useEffect(() => {
-        // Ensure the component syncs with the current theme from context on load
-        if (portfolio?.themeId) {
-            setSelectedTheme(applyThemeDefaults(portfolio.themeId));
-        }
-    }, [portfolio]);
+        setSelectedTheme(portfolioTheme);
+    }, [portfolioTheme.name, portfolioTheme._id]); // Depend on unique ID/name to trigger sync
 
 
-    // ---- Built-in themes (Updated with new attributes) ----
+    // ---- Built-in themes (Fully specified with all new attributes) ----
     const builtInThemes = [
         applyThemeDefaults({
-            name: "Dark Minimal",
-            primaryColor: "#4F46E5",       // Indigo
-            secondaryColor: "#818CF8",      // Light Indigo
-            accentColor: "#10B981",         // Emerald
-            primaryHoverColor: "#3730A3",   // Darker Indigo
-            backgroundColor: "#111827",
-            cardBackgroundColor: "#1F2937",
-            textPrimaryColor: "#F9FAFB",
-            textSecondaryColor: "#9CA3AF",
-            borderColor: "#374151",
-            fontFamily: "'Roboto', sans-serif",
-            headingWeight: "font-bold",
-            headingSize: "1.5rem",
-            bodySize: "1rem",
-            lineHeightBase: "1.6",
-            buttonStyle: "rounded",
-            shadowIntensity: "shadow-2xl", // Enhanced depth
-            cardBorderRadius: "0.5rem",
-            transitionDuration: "duration-300",
-            buttonShadowStyle: "shadow-indigo-500/50 hover:shadow-indigo-500/80",
-            layoutType: "container",
-        }),
-        applyThemeDefaults({
-            name: "Light Modern",
-            primaryColor: "#2563EB",       // Blue
-            secondaryColor: "#3B82F6",      // Light Blue
-            accentColor: "#F59E0B",         // Amber
-            primaryHoverColor: "#1D4ED8",   // Darker Blue
+            name: "Professional Light",
+            primaryColor: "#059669",      // Emerald
+            secondaryColor: "#34D399",     // Light Emerald
+            accentColor: "#F59E0B",         // Amber (for highlights)
+            primaryHoverColor: "#047857",
             backgroundColor: "#F9FAFB",
             cardBackgroundColor: "#FFFFFF",
             textPrimaryColor: "#111827",
@@ -76,363 +129,310 @@ export default function ThemeSelector() {
             borderColor: "#E5E7EB",
             fontFamily: "'Inter', sans-serif",
             headingWeight: "font-extrabold",
-            headingSize: "1.5rem",
-            bodySize: "1rem",
+            headingSize: "2.5rem",
+            bodySize: "1.0625rem", // 17px
             lineHeightBase: "1.7",
+            layoutType: "detailed",
+            sectionSpacing: "py-20",
+            containerWidth: "max-w-6xl",
+            cardBorderRadius: "0.5rem",
+            shadowIntensity: "shadow-lg",
             buttonStyle: "rounded",
-            shadowIntensity: "shadow-xl",
-            cardBorderRadius: "0.75rem",
             transitionDuration: "duration-200",
-            buttonShadowStyle: "shadow-blue-500/50 hover:shadow-lg",
-            layoutType: "container",
+            buttonShadowStyle: "shadow-emerald-500/30 hover:shadow-emerald-500/50",
+            iconStyle: "outline",
+            secondaryButtonStyle: "outline",
         }),
-        // --- The Super Fantastic Built-in Theme ---
         applyThemeDefaults({
-            name: "Stellar Fusion",
-            primaryColor: "#D946EF",       // Fuchsia
-            secondaryColor: "#F43F5E",      // Rose
-            accentColor: "#06B6D4",         // Cyan (High Contrast Accent)
-            primaryHoverColor: "#C026D3",   // Darker Fuchsia
-            backgroundColor: "#0F172A",     // Deep Blue/Slate
-            cardBackgroundColor: "#1E293B", // Darker Card
-            textPrimaryColor: "#E0E7FF",    // Pale Indigo Text
-            textSecondaryColor: "#94A3B8",  // Slate Gray Text
+            name: "Modern Dark Slate",
+            primaryColor: "#8B5CF6",      // Violet
+            secondaryColor: "#C4B5FD",     // Light Violet
+            accentColor: "#FACC15",         // Amber
+            primaryHoverColor: "#7C3AED",
+            backgroundColor: "#0F172A",   // Slate Blue
+            cardBackgroundColor: "#1E293B",
+            textPrimaryColor: "#F1F5F9",
+            textSecondaryColor: "#94A3B8",
             borderColor: "#334155",
-            fontFamily: "'Poppins', sans-serif", // Modern Font
-            headingWeight: "font-black",
+            fontFamily: "'Roboto Mono', monospace",
+            headingWeight: "font-bold",
+            headingSize: "2.25rem",
+            bodySize: "1rem",
+            lineHeightBase: "1.65",
+            layoutType: "minimal",
+            sectionSpacing: "py-28",
+            containerWidth: "max-w-7xl",
+            cardBorderRadius: "1rem",
+            shadowIntensity: "shadow-2xl",
+            buttonStyle: "pill",
+            transitionDuration: "duration-300",
+            buttonShadowStyle: "shadow-violet-500/50 hover:shadow-amber-500/50",
+            iconStyle: "solid",
+            secondaryButtonStyle: "ghost",
+        }),
+        applyThemeDefaults({
+            name: "Oceanic Clarity",
+            primaryColor: "#0EA5E9",      // Sky Blue
+            secondaryColor: "#38BDF8",     // Lighter Sky Blue
+            accentColor: "#10B981",         // Emerald
+            primaryHoverColor: "#0284C7",
+            backgroundColor: "#EFF6FF",   // Pale Blue Background
+            cardBackgroundColor: "#FFFFFF",
+            textPrimaryColor: "#172554",
+            textSecondaryColor: "#475569",
+            borderColor: "#BFDBFE",
+            fontFamily: "'Poppins', sans-serif",
+            headingWeight: "font-bold",
+            headingSize: "3rem",
+            bodySize: "1.125rem", // 18px
+            lineHeightBase: "1.6",
+            layoutType: "detailed",
+            sectionSpacing: "py-24",
+            containerWidth: "max-w-5xl",
+            cardBorderRadius: "0.25rem", // Sharp corners
+            shadowIntensity: "shadow-none", // Flat design
+            buttonStyle: "rounded",
+            transitionDuration: "duration-500", // Slow and smooth
+            buttonShadowStyle: "shadow-none hover:ring-2 ring-sky-500",
+            iconStyle: "outline",
+            secondaryButtonStyle: "primary-bordered", // Custom style: bordered with primary color
+        }),
+        applyThemeDefaults({
+            name: "Warm Minimalist",
+            primaryColor: "#F59E0B",      // Amber
+            secondaryColor: "#FCD34D",     // Light Amber
+            accentColor: "#EF4444",         // Red (for alerts/highlights)
+            primaryHoverColor: "#D97706",
+            backgroundColor: "#FEFCE8",   // Light Yellow/Cream
+            cardBackgroundColor: "#FFFFFF",
+            textPrimaryColor: "#374151",
+            textSecondaryColor: "#6B7280",
+            borderColor: "#FBBF24",
+            fontFamily: "'Georgia', serif",
+            headingWeight: "font-semibold",
             headingSize: "2rem",
             bodySize: "1.125rem",
-            lineHeightBase: "1.65",
-            sectionSpacing: "py-28",        // Extra spacing for impact
-            containerWidth: "max-w-7xl",    // Wider layout
-            buttonStyle: "pill",
-            shadowIntensity: "shadow-3xl",  // Very deep shadow
-            cardBorderRadius: "1rem",       // Distinct rounded corners
-            transitionDuration: "duration-500", // Slower, smoother transitions
-            buttonShadowStyle: "shadow-fuchsia-500/70 hover:shadow-cyan-500/70", // Dramatic shadow change
-            layoutType: "container",
-            iconStyle: "solid",
-        }),
-        // --- Existing themes updated ---
-        applyThemeDefaults({
-            name: "Candy Pop",
-            primaryColor: "#F472B6",
-            secondaryColor: "#FBBF24",
-            accentColor: "#10B981",
-            primaryHoverColor: "#EC4899",
-            backgroundColor: "#FFF1F8",
-            cardBackgroundColor: "#FCE7F3",
-            textPrimaryColor: "#831843",
-            textSecondaryColor: "#9D174D",
-            borderColor: "#F9A8D4",
-            fontFamily: "'Inter', sans-serif",
-            headingWeight: "font-semibold",
-            headingSize: "1.5rem",
-            bodySize: "1rem",
-            lineHeightBase: "1.5",
-            buttonStyle: "pill",
-            shadowIntensity: "shadow-xl",
-            cardBorderRadius: "0.75rem",
+            lineHeightBase: "1.8",
+            layoutType: "minimal",
+            sectionSpacing: "py-16",
+            containerWidth: "max-w-4xl",
+            cardBorderRadius: "1rem",
+            shadowIntensity: "shadow-md",
+            buttonStyle: "rounded",
             transitionDuration: "duration-300",
-            buttonShadowStyle: "shadow-pink-400/50 hover:shadow-yellow-400/50",
-            layoutType: "container",
+            buttonShadowStyle: "shadow-amber-400/50 hover:shadow-lg",
+            iconStyle: "solid",
+            secondaryButtonStyle: "outline",
         }),
-        // --- Sleek Dark Elegance ---
-applyThemeDefaults({
-    name: "Dark Elegance",
-    primaryColor: "#0EA5E9",       // Sky Blue
-    secondaryColor: "#3B82F6",     // Blue
-    accentColor: "#FACC15",        // Amber
-    primaryHoverColor: "#0369A1",  // Darker Sky Blue
-    backgroundColor: "#111827",    // Charcoal Black
-    cardBackgroundColor: "#1F2937",
-    textPrimaryColor: "#F8FAFC",
-    textSecondaryColor: "#CBD5E1",
-    borderColor: "#334155",
-    fontFamily: "'Inter', sans-serif",
-    headingWeight: "font-extrabold",
-    headingSize: "2rem",
-    bodySize: "1rem",
-    lineHeightBase: "1.6",
-    sectionSpacing: "py-24",
-    containerWidth: "max-w-6xl",
-    buttonStyle: "pill",
-    shadowIntensity: "shadow-2xl",
-    cardBorderRadius: "0.75rem",
-    transitionDuration: "duration-300",
-    buttonShadowStyle: "shadow-blue-500/50 hover:shadow-amber-400/70",
-    layoutType: "container",
-    iconStyle: "solid",
-}),
-
-// --- Modern Sunset ---
-applyThemeDefaults({
-    name: "Modern Sunset",
-    primaryColor: "#F97316",       // Orange
-    secondaryColor: "#F43F5E",     // Rose
-    accentColor: "#10B981",        // Emerald
-    primaryHoverColor: "#C2410C",  // Dark Orange
-    backgroundColor: "#FFF7ED",    // Soft Peach
-    cardBackgroundColor: "#FEF3C7", 
-    textPrimaryColor: "#1F2937",
-    textSecondaryColor: "#4B5563",
-    borderColor: "#FCD34D",
-    fontFamily: "'Poppins', sans-serif",
-    headingWeight: "font-bold",
-    headingSize: "1.75rem",
-    bodySize: "1rem",
-    lineHeightBase: "1.65",
-    sectionSpacing: "py-24",
-    containerWidth: "max-w-7xl",
-    buttonStyle: "rounded",
-    shadowIntensity: "shadow-xl",
-    cardBorderRadius: "1rem",
-    transitionDuration: "duration-300",
-    buttonShadowStyle: "shadow-orange-400/50 hover:shadow-green-400/60",
-    layoutType: "container",
-    iconStyle: "solid",
-}),
-
-// --- Oceanic Calm ---
-applyThemeDefaults({
-    name: "Oceanic Calm",
-    primaryColor: "#06B6D4",       // Cyan
-    secondaryColor: "#3B82F6",     // Blue
-    accentColor: "#0EA5E9",        // Sky Blue
-    primaryHoverColor: "#0369A1",  // Deep Cyan
-    backgroundColor: "#ECFEFF",    // Soft Aqua
-    cardBackgroundColor: "#E0F2FE", 
-    textPrimaryColor: "#0F172A",
-    textSecondaryColor: "#334155",
-    borderColor: "#38BDF8",
-    fontFamily: "'Inter', sans-serif",
-    headingWeight: "font-extrabold",
-    headingSize: "1.75rem",
-    bodySize: "1rem",
-    lineHeightBase: "1.6",
-    sectionSpacing: "py-24",
-    containerWidth: "max-w-6xl",
-    buttonStyle: "pill",
-    shadowIntensity: "shadow-lg",
-    cardBorderRadius: "0.75rem",
-    transitionDuration: "duration-300",
-    buttonShadowStyle: "shadow-cyan-400/50 hover:shadow-sky-500/70",
-    layoutType: "container",
-    iconStyle: "outline",
-}),
-
-// --- Cyber Neon ---
-applyThemeDefaults({
-    name: "Cyber Neon",
-    primaryColor: "#8B5CF6",       // Purple
-    secondaryColor: "#EC4899",     // Pink
-    accentColor: "#14B8A6",        // Teal
-    primaryHoverColor: "#7C3AED",  // Dark Purple
-    backgroundColor: "#0F172A",    // Dark Blue
-    cardBackgroundColor: "#1E293B",
-    textPrimaryColor: "#E0E7FF",
-    textSecondaryColor: "#94A3B8",
-    borderColor: "#4338CA",
-    fontFamily: "'Poppins', sans-serif",
-    headingWeight: "font-black",
-    headingSize: "2rem",
-    bodySize: "1rem",
-    lineHeightBase: "1.6",
-    sectionSpacing: "py-28",
-    containerWidth: "max-w-7xl",
-    buttonStyle: "pill",
-    shadowIntensity: "shadow-2xl",
-    cardBorderRadius: "1rem",
-    transitionDuration: "duration-500",
-    buttonShadowStyle: "shadow-purple-500/70 hover:shadow-teal-500/70",
-    layoutType: "container",
-    iconStyle: "solid",
-}),
-
-// --- Elegant Pastel ---
-applyThemeDefaults({
-    name: "Elegant Pastel",
-    primaryColor: "#F472B6",       // Pink
-    secondaryColor: "#FBBF24",     // Amber
-    accentColor: "#34D399",        // Emerald
-    primaryHoverColor: "#EC4899",  // Dark Pink
-    backgroundColor: "#FFFBEB",    // Cream
-    cardBackgroundColor: "#FEF3C7",
-    textPrimaryColor: "#1F2937",
-    textSecondaryColor: "#4B5563",
-    borderColor: "#F9A8D4",
-    fontFamily: "'Inter', sans-serif",
-    headingWeight: "font-semibold",
-    headingSize: "1.75rem",
-    bodySize: "1rem",
-    lineHeightBase: "1.6",
-    sectionSpacing: "py-24",
-    containerWidth: "max-w-6xl",
-    buttonStyle: "rounded",
-    shadowIntensity: "shadow-lg",
-    cardBorderRadius: "0.75rem",
-    transitionDuration: "duration-300",
-    buttonShadowStyle: "shadow-pink-400/50 hover:shadow-amber-400/60",
-    layoutType: "container",
-    iconStyle: "outline",
-}),
-
     ];
 
-    const handleThemeSelect = async (theme) => {
-        if (!theme) return;
-
-        // Apply defaults before sending to ensure all new fields are present
-        const themeToUpdate = applyThemeDefaults(theme);
-        
-        setSelectedTheme(themeToUpdate);
-        setLoading(true);
-        setStatusMessage(null);
-
-        try {
-            console.log('Updating theme with:', themeToUpdate);
-            // Assuming currentTheme._id holds the Mongoose ID for the existing theme document
-            await api.put(`/theme/update-theme/${currentTheme._id}`, themeToUpdate, { withCredentials: true });
-            await fetchPortfolio(); // Sync context
-            setStatusMessage({ type: 'success', text: "Theme updated successfully! Preview updated below." });
-        } catch (err) {
-            console.error("Failed to update theme", err);
-            setStatusMessage({ type: 'error', text: "Failed to update theme. Check console for details." });
-        } finally {
-            setLoading(false);
-            // Clear message after a few seconds
-            setTimeout(() => setStatusMessage(null), 5000);
-        }
-    };
-
     // Style for the live preview based on selected theme
-    const themeStyles = {
-        '--primary-color': selectedTheme.primaryColor,
-        '--secondary-color': selectedTheme.secondaryColor,
-        '--accent-color': selectedTheme.accentColor,
-        '--card-bg-color': selectedTheme.cardBackgroundColor,
-        '--text-primary-color': selectedTheme.textPrimaryColor,
-        '--text-secondary-color': selectedTheme.textSecondaryColor,
-        '--border-color': selectedTheme.borderColor,
-        '--card-border-radius': selectedTheme.cardBorderRadius,
-        '--font-family': selectedTheme.fontFamily,
-        '--line-height-base': selectedTheme.lineHeightBase,
+    // We use inline styles for colors, font, and size to override Tailwind defaults.
+    // We use className for layout, spacing, shadow, and weight since they map directly to Tailwind utility classes.
+    const getSecondaryButtonStyle = (theme) => {
+        switch (theme.secondaryButtonStyle) {
+            case 'ghost':
+                return {
+                    color: theme.primaryColor,
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    boxShadow: 'none',
+                    transition: `all ${theme.transitionDuration.replace('duration-', '')}ms ease-in-out`,
+                };
+            case 'primary-bordered':
+                return {
+                    color: theme.primaryColor,
+                    backgroundColor: 'transparent',
+                    border: `2px solid ${theme.primaryColor}`,
+                    boxShadow: 'none',
+                    transition: `all ${theme.transitionDuration.replace('duration-', '')}ms ease-in-out`,
+                };
+            case 'outline':
+            default:
+                return {
+                    color: theme.textSecondaryColor,
+                    backgroundColor: 'transparent',
+                    border: `2px solid ${theme.borderColor}`,
+                    boxShadow: 'none',
+                    transition: `all ${theme.transitionDuration.replace('duration-', '')}ms ease-in-out`,
+                };
+        }
     };
 
 
     return (
-        <div className="space-y-8" style={{ fontFamily: selectedTheme.fontFamily }}>
-            <h1 className="text-3xl font-bold">Select Your Theme</h1>
+        <div className="space-y-8 p-4 md:p-8 bg-gray-50 rounded-lg">
+            <h1 className="text-3xl font-extrabold text-gray-900">
+                <Palette className="inline-block h-8 w-8 mr-2 text-indigo-600" />
+                Portfolio Theme Configuration
+            </h1>
             
             {statusMessage && (
-                <div className={`p-3 rounded-lg ${statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <div className={`p-4 rounded-lg font-medium transition-opacity ${
+                    statusMessage.type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-700'
+                }`}>
                     {statusMessage.text}
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="text-xl font-semibold text-gray-700 border-b pb-2">Select a Preset Theme</h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {builtInThemes.map((theme, index) => (
                     <Card
                         key={index}
-                        className={`p-4 border-2 cursor-pointer transition-all ${theme.transitionDuration} ${theme.buttonShadowStyle} ${
-                            selectedTheme.name === theme.name ? "border-4 border-blue-500 ring-2 ring-blue-500" : "border-gray-200"
+                        className={`p-4 border-2 cursor-pointer transition-all ${theme.transitionDuration} ${
+                            selectedTheme.name === theme.name ? "border-4 border-primary ring-2 ring-primary" : "border-gray-200 hover:border-gray-400"
                         }`}
                         style={{ 
                             borderRadius: theme.cardBorderRadius, 
-                            boxShadow: theme.shadowIntensity.replace('shadow-', '0 '), // Apply shadow to card
+                            backgroundColor: theme.cardBackgroundColor,
+                            boxShadow: theme.shadowIntensity.includes('shadow-') ? theme.shadowIntensity.replace('shadow-', '0 ') : '', // Visual hint of shadow
                         }}
-                        onClick={() => handleThemeSelect(theme)}
+                        onClick={() => {
+                            if (!loading) {
+                                setSelectedTheme(theme);
+                                handleThemeSelect(theme);
+                            }
+                        }}
                     >
-                        <div className="flex justify-between items-center mb-2">
-                            <div className="font-extrabold text-xl" style={{ color: theme.primaryColor, fontFamily: theme.fontFamily }}>
-                                {theme.name}
+                        <div className="flex flex-col h-full">
+                            <div className="flex justify-between items-start mb-3">
+                                <h3 className={`text-xl ${theme.headingWeight}`} style={{ color: theme.primaryColor, fontFamily: theme.fontFamily }}>
+                                    {theme.name}
+                                </h3>
+                                {selectedTheme.name === theme.name && (
+                                    <Loader2 className={`h-6 w-6 animate-spin ${loading ? 'text-primary' : 'text-emerald-500'}`} />
+                                )}
                             </div>
-                            {selectedTheme.name === theme.name && <Loader2 className="h-5 w-5 animate-spin text-blue-500" />}
-                        </div>
 
-                        {/* Mini preview inside card */}
-                        <div 
-                            className={`p-3 rounded ${theme.shadowIntensity.replace('shadow-', 'shadow-')}`}
-                            style={{ 
-                                backgroundColor: theme.cardBackgroundColor, 
-                                border: `2px solid ${theme.borderColor}`,
-                                borderRadius: theme.cardBorderRadius,
-                                fontFamily: theme.fontFamily
-                            }} 
-                        >
-                            <h3 
-                                className={theme.headingWeight} 
-                                style={{ color: theme.textPrimaryColor, fontSize: theme.headingSize }}
-                            >
-                                Overview Title
-                            </h3>
-                            <p 
-                                className="mt-1"
+                            {/* Mini Style Preview */}
+                            <div 
+                                className={`flex flex-col p-3 border ${theme.shadowIntensity}`}
                                 style={{ 
-                                    color: theme.textSecondaryColor, 
-                                    fontSize: theme.bodySize,
-                                    lineHeight: theme.lineHeightBase
-                                }}
+                                    backgroundColor: theme.backgroundColor, 
+                                    border: `1px solid ${theme.borderColor}`,
+                                    borderRadius: theme.cardBorderRadius,
+                                    fontFamily: theme.fontFamily,
+                                    lineHeight: theme.lineHeightBase,
+                                }} 
                             >
-                                Body text preview demonstrating {theme.iconStyle} icons...
-                            </p>
-                            <button
-                                className={`mt-3 px-4 py-2 text-sm text-white font-medium transition-colors ${theme.transitionDuration}`}
-                                style={{
-                                    backgroundColor: theme.primaryColor,
-                                    borderRadius: theme.buttonStyle === "pill" ? "999px" : theme.cardBorderRadius,
-                                    boxShadow: theme.buttonShadowStyle.includes('shadow-') ? theme.buttonShadowStyle.replace('shadow-', '') : ''
-                                }}
-                            >
-                                Primary Button
-                            </button>
+                                <div className="flex items-center space-x-2">
+                                    <Zap style={{ color: theme.accentColor }} className={theme.iconStyle === 'solid' ? 'fill-current' : ''} />
+                                    <span 
+                                        className={theme.headingWeight} 
+                                        style={{ color: theme.textPrimaryColor, fontSize: theme.headingSize }}
+                                    >
+                                        Title ({theme.headingWeight.split('-')[1]})
+                                    </span>
+                                </div>
+                                <p 
+                                    className="mt-1"
+                                    style={{ 
+                                        color: theme.textSecondaryColor, 
+                                        fontSize: theme.bodySize,
+                                    }}
+                                >
+                                    Body text preview for readability and line height. Layout: {theme.layoutType}.
+                                </p>
+                                <div className="flex space-x-2 mt-3">
+                                    <button
+                                        className={`px-3 py-1.5 text-sm text-white font-medium transition-all ${theme.transitionDuration} hover:opacity-80`}
+                                        style={{
+                                            backgroundColor: theme.primaryColor,
+                                            ...getButtonRadiusStyle(theme.buttonStyle, theme.cardBorderRadius),
+                                            boxShadow: theme.buttonShadowStyle.includes('shadow-') ? theme.buttonShadowStyle.replace('hover:shadow-lg', '') : '',
+                                        }}
+                                    >
+                                        Primary Btn
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </Card>
                 ))}
             </div>
 
-            {/* ---- Live Portfolio Preview ---- */}
+            {/* ---- Live Portfolio Preview: Demonstrates Layout & Typography ---- */}
             <div className="mt-10 pt-6 border-t border-gray-200">
-                <h2 className="text-2xl font-bold mb-4" style={{ color: selectedTheme.textPrimaryColor }}>
+                <h2 className="text-2xl font-bold mb-6" style={{ color: selectedTheme.textPrimaryColor }}>
+                    <Sun className="inline-block h-6 w-6 mr-2" style={{ color: selectedTheme.accentColor }}/>
                     Live Theme Preview: {selectedTheme.name}
                 </h2>
+                
                 <div 
-                    className={`space-y-6 ${selectedTheme.sectionSpacing}`} 
-                    style={{ backgroundColor: selectedTheme.backgroundColor, borderRadius: "1rem" }}
+                    className={`min-h-[400px] overflow-hidden ${selectedTheme.sectionSpacing}`} 
+                    style={{ 
+                        backgroundColor: selectedTheme.backgroundColor, 
+                        borderRadius: selectedTheme.cardBorderRadius,
+                        fontFamily: selectedTheme.fontFamily,
+                        border: `1px dashed ${selectedTheme.borderColor}`
+                    }}
                 >
-                    {/* Sample Hero Section Container */}
-                    <div className={selectedTheme.containerWidth} style={{ margin: '0 auto' }}>
+                    {/* Container Width and Spacing Demo */}
+                    <div className={`${selectedTheme.containerWidth} mx-auto px-4 sm:px-6 lg:px-8`}>
                         <div 
-                            className={`p-8 ${selectedTheme.shadowIntensity.replace('shadow-', 'shadow-')}`}
+                            className={`p-8 ${selectedTheme.shadowIntensity} ${selectedTheme.transitionDuration}`}
                             style={{ 
                                 backgroundColor: selectedTheme.cardBackgroundColor, 
-                                border: `3px solid ${selectedTheme.borderColor}`, 
+                                border: `2px solid ${selectedTheme.borderColor}`, 
                                 borderRadius: selectedTheme.cardBorderRadius,
-                                transition: `all ${selectedTheme.transitionDuration.replace('duration-', '')}ms ease-in-out`
                             }}
                         >
-                            <h3 className={`text-4xl ${selectedTheme.headingWeight}`} style={{ color: selectedTheme.accentColor }}>
-                                Welcome to Your Portfolio
-                            </h3>
-                            <p 
-                                className="mt-3 text-lg" 
-                                style={{ color: selectedTheme.textSecondaryColor, lineHeight: selectedTheme.lineHeightBase }}
-                            >
-                                This section demonstrates the overall color palette, spacing ({selectedTheme.sectionSpacing}), and text styles ({selectedTheme.fontFamily}). The modern attributes ensure a polished, cohesive look across your entire site.
-                            </p>
-                            <Button
-                                className={`mt-5 px-6 py-3 font-semibold transition-all ${selectedTheme.transitionDuration} ${selectedTheme.buttonShadowStyle}`}
-                                style={{
-                                    backgroundColor: selectedTheme.primaryColor,
-                                    color: selectedTheme.cardBackgroundColor, // Contrast text for primary button
-                                    borderRadius: selectedTheme.buttonStyle === "pill" ? "999px" : selectedTheme.cardBorderRadius,
-                                    // Manually apply hover color for preview
-                                    '--tw-bg-opacity': 1,
-                                    '&:hover': { backgroundColor: selectedTheme.primaryHoverColor }
+                            {/* Heading Weight and Size */}
+                            <h3 
+                                className={`text-5xl tracking-tight ${selectedTheme.headingWeight}`} 
+                                style={{ 
+                                    color: selectedTheme.primaryColor,
+                                    fontSize: selectedTheme.headingSize,
+                                    transition: `color ${selectedTheme.transitionDuration.replace('duration-', '')}ms ease-in-out`
                                 }}
                             >
-                                Contact Me
-                            </Button>
+                                Theme System Mastery
+                            </h3>
+                            {/* Accent Color and Secondary Text */}
+                            <p className="mt-2 text-xl" style={{ color: selectedTheme.accentColor }}>
+                                <span className="font-bold">Accent Color Highlight:</span> The details define the experience.
+                            </p>
+
+                            {/* Body Size and Line Height */}
+                            <p 
+                                className="mt-4" 
+                                style={{ 
+                                    color: selectedTheme.textSecondaryColor, 
+                                    fontSize: selectedTheme.bodySize,
+                                    lineHeight: selectedTheme.lineHeightBase 
+                                }}
+                            >
+                                This demonstrates the **Body Size** ({selectedTheme.bodySize}) and **Line Height** ({selectedTheme.lineHeightBase}) for optimal readability. The theme framework now elegantly handles depth ({selectedTheme.shadowIntensity}), borders, and overall layout complexity ({selectedTheme.layoutType}).
+                            </p>
+
+                            {/* Button Styles and Shadows */}
+                            <div className="flex flex-wrap gap-4 mt-6">
+                                {/* Primary Button */}
+                                <button
+                                    className={`px-6 py-3 font-semibold text-white transition-all ${selectedTheme.transitionDuration} ${selectedTheme.buttonShadowStyle}`}
+                                    style={{
+                                        backgroundColor: selectedTheme.primaryColor,
+                                        color: selectedTheme.cardBackgroundColor, // High contrast text
+                                        ...getButtonRadiusStyle(selectedTheme.buttonStyle, selectedTheme.cardBorderRadius),
+                                        // In a real app, primaryHoverColor would be handled by Tailwind's JIT or CSS variables
+                                    }}
+                                >
+                                    Primary Action ({selectedTheme.buttonStyle})
+                                </button>
+                                
+                                {/* Secondary Button - Demonstrating secondaryButtonStyle */}
+                                <button
+                                    className={`px-6 py-3 font-semibold transition-all ${selectedTheme.transitionDuration}`}
+                                    style={{
+                                        ...getSecondaryButtonStyle(selectedTheme),
+                                        ...getButtonRadiusStyle(selectedTheme.buttonStyle, selectedTheme.cardBorderRadius),
+                                    }}
+                                >
+                                    Secondary Action ({selectedTheme.secondaryButtonStyle})
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
