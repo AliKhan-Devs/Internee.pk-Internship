@@ -45,10 +45,6 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  // 4. If still loading, render nothing or a loading spinner
-  if (loading) {
-    return <div>Loading authentication...</div>; // Or a professional spinner component
-  }
 
   return (
     <AuthContext.Provider value={{ user, login, register, logout, checkAuth, isAuthenticated: !!user, loading }}>
