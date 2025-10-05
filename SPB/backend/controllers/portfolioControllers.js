@@ -1,5 +1,5 @@
 import Portfolio from "../models/Portfolio.js";
-import User from "../Models/User.js";
+import User from "../models/User.js";
 import Button from "../models/Button.js";
 import Card from "../models/Card.js";
 
