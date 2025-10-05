@@ -34,7 +34,7 @@ export const generateToken = async(id, userName) => {
         const secret = process.env.SECRET;
         const expiresIn = process.env.EXPIRES_IN;
         const token = await jwt.sign(payload, secret, { expiresIn: expiresIn });
-        console.log(token)
+        // console.log(token)
         return token;
     } catch (error) {
         console.log(error);

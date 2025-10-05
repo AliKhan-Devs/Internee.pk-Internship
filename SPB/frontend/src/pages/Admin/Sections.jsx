@@ -14,17 +14,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { FiRotateCcw } from "react-icons/fi";
+import ImageUploader from "@/components/ImageUploader";
+import IconPicker from "@/components/IconPicker";
+import RenderIcon from "@/components/RenderIcon";
+import { toast } from "sonner";
 
 export default function Overview() {
   const {
     portfolio,
-    updateOverview,
-    addButton,
-    updateButton,
-    deleteButton,
-    addCard,
-    updateCard,
-    deleteCard,
     fetchPortfolio
   } = usePortfolio();
 
@@ -38,9 +35,9 @@ export default function Overview() {
   const [addingCardOverview, setAddingCardOverview] = useState(null);
   const [editingCard, setEditingCard] = useState(null);
 
-  const [formData, setFormData] = useState({ title: "", description: "" });
-  const [buttonData, setButtonData] = useState({ text: "", link: ""});
-  const [cardData, setCardData] = useState({ title: "", description: "",icon:"",imgUrl:"",tags:"" });
+  const [formData, setFormData] = useState({ title: "", description: "", isActive: true });
+  const [buttonData, setButtonData] = useState({ text: "", link: "",buttonIcon:"" });
+  const [cardData, setCardData] = useState({ title: "", description: "", icon: "", imgUrl: "", tags: "" });
 
   // ---- Section Handlers ----
   const handleSaveOverview = async () => {
@@ -54,23 +51,24 @@ export default function Overview() {
       );
       fetchPortfolio();
       setEditingOverview(null);
+      toast.success("Updated Successfully")
     } catch (err) {
-      console.error("Failed to update overview", err);
+      toast.error("Failed to update overview");
     } finally {
       setLoading(false);
     }
   };
 
   // ---- Button Handlers ----
-  const handleDeleteButton = async(id)=>{
+  const handleDeleteButton = async (id) => {
     if (!confirm("Are you sure you want to delete this button?")) return;
     setLoading(true);
     try {
       await api.delete(`/button/delete/${id}`, { withCredentials: true });
       fetchPortfolio();
-      alert('delete success fully');
+      toast.success('delete success fully');
     } catch (err) {
-      console.error("Failed to delete button", err);
+      toast.error("Failed to delete button");
     } finally {
       setLoading(false);
     }
@@ -84,7 +82,8 @@ export default function Overview() {
         { ...buttonData, buttonPosition: addingButtonOverview._id, onModal: "Overview" },
         { withCredentials: true }
       );
-      addButton(addingButtonOverview._id, res.data, "overview");
+      fetchPortfolio();
+     
       setAddingButtonOverview(null);
     } catch (err) {
       console.error("Failed to add button", err);
@@ -129,19 +128,19 @@ export default function Overview() {
       setLoading(false);
     }
   };
-const handleDeleteCard = async(id)=>{
-  if (!confirm("Are you sure you want to delete this card?")) return;
-  setLoading(true);
-  try {
-    await api.delete(`/card/delete/${id}`, { withCredentials: true });
-    fetchPortfolio();
-    alert('delete success fully');
-  } catch (err) {
-    console.error("Failed to delete card", err);
-  } finally {
-    setLoading(false);
+  const handleDeleteCard = async (id) => {
+    if (!confirm("Are you sure you want to delete this card?")) return;
+    setLoading(true);
+    try {
+      await api.delete(`/card/delete/${id}`, { withCredentials: true });
+      fetchPortfolio();
+      alert('delete success fully');
+    } catch (err) {
+      console.error("Failed to delete card", err);
+    } finally {
+      setLoading(false);
+    }
   }
-}
   const handleUpdateCardModal = async () => {
     if (!editingCard) return;
     setLoading(true);
@@ -151,7 +150,7 @@ const handleDeleteCard = async(id)=>{
         cardData,
         { withCredentials: true }
       );
-     fetchPortfolio();
+      fetchPortfolio();
       setEditingCard(null);
     } catch (err) {
       console.error("Failed to update card", err);
@@ -163,14 +162,14 @@ const handleDeleteCard = async(id)=>{
   return (
     <div className="space-y-10">
       <h1 className="text-3xl font-bold">Manage Overview Sections</h1>
-        {/* Refresh button */}
-        <Button onClick={() => fetchPortfolio()}>Refresh <FiRotateCcw className="inline"/></Button>
+      {/* Refresh button */}
+      <Button onClick={() => fetchPortfolio()}>Refresh <FiRotateCcw className="inline" /></Button>
 
       {overviews.map((ov) => (
         <Card key={ov._id} className="p-6 space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold">{ov.title}</h2>
-            <Button onClick={() => { setFormData({ title: ov.title, description: ov.description }); setEditingOverview(ov); }}>
+            <Button onClick={() => { setFormData({ title: ov.title, description: ov.description, isActive: ov.isActive }); setEditingOverview(ov); }}>
               Edit Section
             </Button>
           </div>
@@ -181,14 +180,14 @@ const handleDeleteCard = async(id)=>{
             <h3 className="font-medium mb-2">Section Buttons</h3>
             {ov.buttons?.length > 0 ? ov.buttons.map((btn) => (
               <div key={btn._id} className="flex justify-between items-center bg-gray-50 p-2 rounded mb-2">
-                <a href={btn.link} target="_blank" rel="noreferrer" className="text-blue-600">{btn.text}</a>
+                <a href={btn.link} target="_blank" rel="noreferrer" className="text-blue-600"><RenderIcon iconName={btn.buttonIcon} size={20} color={'white'} className={"inline"}/> {btn.text}</a>
                 <div className="space-x-2">
-                  <Button size="sm" onClick={() => { setButtonData({ text: btn.text, link: btn.link }); setEditingButton({ ...btn, overviewId: ov._id, type: "overview" }); }}>Edit</Button>
-                  <Button size="sm" variant="destructive" onClick={() =>handleDeleteButton(btn._id)}>Delete</Button>
+                  <Button size="sm" onClick={() => { setButtonData({ text: btn.text, link: btn.link, buttonIcon: btn.buttonIcon }); setEditingButton({ ...btn, overviewId: ov._id, type: "overview" }); }}>Edit</Button>
+                  <Button size="sm" variant="destructive" onClick={() => handleDeleteButton(btn._id)}>Delete</Button>
                 </div>
               </div>
             )) : <p className="text-sm text-gray-400">No buttons yet</p>}
-            <Button size="sm" className="mt-2" onClick={() => { setButtonData({ text: "", link: ""}); setAddingButtonOverview(ov); }}>+ Add Button</Button>
+            <Button size="sm" className="mt-2" onClick={() => { setButtonData({ text: "", link: "", buttonIcon: "" }); setAddingButtonOverview(ov); }}>+ Add Button</Button>
           </div>
 
           {/* Cards */}
@@ -199,7 +198,7 @@ const handleDeleteCard = async(id)=>{
                 <h4 className="font-semibold">{card.title}</h4>
                 <p className="text-gray-600">{card.description}</p>
                 <div className="mt-2 space-x-2">
-                  <Button size="sm" onClick={() => { setCardData({ title: card.title, description: card.description,imgUrl:card.imgUrl,tags:card.tags,icon:card.icon }); setEditingCard({ ...card, overviewId: ov._id }); }}>Edit</Button>
+                  <Button size="sm" onClick={() => { setCardData({ title: card.title, description: card.description, imgUrl: card.imgUrl, tags: card.tags, icon: card.icon }); setEditingCard({ ...card, overviewId: ov._id }); }}>Edit</Button>
                   <Button size="sm" variant="destructive" onClick={() => handleDeleteCard(card._id)}>Delete</Button>
                 </div>
 
@@ -207,18 +206,18 @@ const handleDeleteCard = async(id)=>{
                 <div className="mt-2">
                   {card.buttons?.map((btn) => (
                     <div key={btn._id} className="flex justify-between items-center bg-gray-100 p-2 rounded mb-1">
-                      <a href={btn.link} target="_blank" rel="noreferrer" className="text-indigo-600">{btn.text}</a>
+                     <Button> <a href={btn.link} target="_blank" rel="noreferrer" className="text-white"><RenderIcon iconName={btn.buttonIcon} size={20} color={'white'} className={"inline"}/> {btn.text}</a></Button>
                       <div className="space-x-2">
-                        <Button size="sm" onClick={() => { setButtonData({ text: btn.text, link: btn.link }); setEditingButton({ ...btn, overviewId: card._id, type: "card" }); }}>Edit</Button>
+                        <Button size="sm" onClick={() => { setButtonData({ text: btn.text, link: btn.link, buttonIcon: btn.buttonIcon }); setEditingButton({ ...btn, overviewId: card._id, type: "card" }); }}>Edit</Button>
                         <Button size="sm" variant="destructive" onClick={() => handleDeleteButton(btn._id)}>Delete</Button>
                       </div>
                     </div>
                   ))}
-                  <Button size="sm" className="mt-2" onClick={() => { setButtonData({ text: "", link: ""}); setAddingButtonOverview(card); }}>+ Add Card Button</Button>
+                  <Button size="sm" className="mt-2" onClick={() => { setButtonData({ text: "", link: "", buttonIcon: "" }); setAddingButtonOverview(card); }}>+ Add Card Button</Button>
                 </div>
               </Card>
             )) : <p className="text-sm text-gray-400">No cards yet</p>}
-            <Button size="sm" className="mt-2" onClick={() => { setCardData({ title: "", description: "",imgUrl:"",icon:""}); setAddingCardOverview(ov); }}>+ Add Card</Button>
+            <Button size="sm" className="mt-2" onClick={() => { setCardData({ title: "", description: "", imgUrl: "", icon: "" }); setAddingCardOverview(ov); }}>+ Add Card</Button>
           </div>
         </Card>
       ))}
@@ -230,17 +229,21 @@ const handleDeleteCard = async(id)=>{
             <DialogTitle>Edit Overview Section</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Title</Label>
               <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
             </div>
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Description</Label>
               <Input value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
             </div>
+            <div className="flex items-center gap-2 w-full">
+              <Label>IsActive</Label>
+              <Input className={"h-5 w-5"} type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} />
+            </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleSaveOverview} disabled={loading}>Save</Button>
+            <Button className={loading ? "cursor-not-allowed" : "cursor-pointer"} onClick={handleSaveOverview} disabled={loading}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -260,7 +263,11 @@ const handleDeleteCard = async(id)=>{
               <Label>Button Link</Label>
               <Input value={buttonData.link} onChange={(e) => setButtonData({ ...buttonData, link: e.target.value })} />
             </div>
-          
+
+            <div>
+              <IconPicker label="Button Icon" value={buttonData.buttonIcon} onChange={(e) => setButtonData({ ...buttonData, buttonIcon: e })} />
+            </div>
+
           </div>
           <DialogFooter>
             <Button onClick={editingButton ? handleUpdateButtonModal : handleSaveNewButton} disabled={loading}>
@@ -287,14 +294,17 @@ const handleDeleteCard = async(id)=>{
             </div>
             <div>
               <Label>Image </Label>
-              <Input value={cardData.imgUrl} onChange={(e) => setCardData({ ...cardData, imgUrl: e.target.value })} />
+              <ImageUploader
+                onUpload={(url) =>setCardData({ ...cardData, imgUrl: url })}
+              />  
             </div>
             <div>
-              <Label>Icon</Label>
-              <Input value={cardData.icon} onChange={(e) => setCardData({ ...cardData, icon: e.target.value })} />
+              {/* <Label>Icon</Label> */}
+              <IconPicker value={cardData.icon} onChange={(e) => setCardData({ ...cardData, icon: e })} />
+              {/* <Input value={cardData.icon} onChange={(e) => setCardData({ ...cardData, icon: e.target.value })} /> */}
             </div>
-           
-            
+
+
           </div>
           <DialogFooter>
             <Button onClick={editingCard ? handleUpdateCardModal : handleSaveNewCard} disabled={loading}>

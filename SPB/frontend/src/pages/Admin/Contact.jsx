@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FiEdit } from "react-icons/fi";
+import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
+import { toast } from "sonner";
 
 export default function Contact() {
   const { portfolio, updatePortfolio, fetchPortfolio } = usePortfolio();
@@ -43,10 +45,7 @@ export default function Contact() {
     }
   }, [contact]);
 
-  useEffect(()=>{
-    console.log(portfolio);
-    console.log(portfolio.contactId);
-  })
+ 
   const handleSaveContact = async () => {
     if (!contact) return;
     setLoading(true);
@@ -55,18 +54,20 @@ export default function Contact() {
         withCredentials: true,
       });
       // Update portfolio context
-    //   updatePortfolio({ contactId: res.data });
-    fetchPortfolio();
+      //   updatePortfolio({ contactId: res.data });
+      fetchPortfolio();
       setEditingContact(false);
+      toast.success("Updated Successfully")
     } catch (err) {
-      console.error("Failed to update contact", err);
+      toast.error("Failed to Updated")
+     
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <section className="mb-16 md:mb-0 space-y-6">
       <h1 className="text-3xl font-bold">Manage Contact Details</h1>
 
       <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
@@ -76,53 +77,93 @@ export default function Contact() {
             <FiEdit className="mr-2" /> Edit Contact
           </Button>
         </div>
-
         {contact ? (
-          <ul className="space-y-2 text-gray-700">
+          <ul className="space-y-3 text-sm text-gray-700">
             {contact.linkedinUrl && (
-              <li>
-                LinkedIn:{" "}
-                <a href={contact.linkedinUrl} target="_blank" rel="noreferrer" className="text-blue-600">
+              <li className="flex items-center gap-3">
+                <FaLinkedin className="text-blue-600 text-xl" />
+                <span className="font-medium text-gray-800">LinkedIn:</span>
+                <a
+                  href={contact.linkedinUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-600 hover:underline hover:text-blue-700 transition-all"
+                >
                   {contact.linkedinUrl}
                 </a>
               </li>
             )}
+
             {contact.githubUrl && (
-              <li>
-                GitHub:{" "}
-                <a href={contact.githubUrl} target="_blank" rel="noreferrer" className="text-gray-800">
+              <li className="flex items-center gap-3">
+                <FaGithub className="text-gray-800 text-xl" />
+                <span className="font-medium text-gray-800">GitHub:</span>
+                <a
+                  href={contact.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-gray-800 hover:underline hover:text-black transition-all"
+                >
                   {contact.githubUrl}
                 </a>
               </li>
             )}
+
             {contact.twitterUrl && (
-              <li>
-                Twitter:{" "}
-                <a href={contact.twitterUrl} target="_blank" rel="noreferrer" className="text-blue-400">
+              <li className="flex items-center gap-3">
+                <FaTwitter className="text-sky-500 text-xl" />
+                <span className="font-medium text-gray-800">Twitter:</span>
+                <a
+                  href={contact.twitterUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sky-500 hover:underline hover:text-sky-600 transition-all"
+                >
                   {contact.twitterUrl}
                 </a>
               </li>
             )}
+
             {contact.youtubeUrl && (
-              <li>
-                YouTube:{" "}
-                <a href={contact.youtubeUrl} target="_blank" rel="noreferrer" className="text-red-600">
+              <li className="flex items-center gap-3">
+                <FaYoutube className="text-red-600 text-xl" />
+                <span className="font-medium text-gray-800">YouTube:</span>
+                <a
+                  href={contact.youtubeUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-red-600 hover:underline hover:text-red-700 transition-all"
+                >
                   {contact.youtubeUrl}
                 </a>
               </li>
             )}
+
             {contact.facebookUrl && (
-              <li>
-                Facebook:{" "}
-                <a href={contact.facebookUrl} target="_blank" rel="noreferrer" className="text-blue-700">
+              <li className="flex items-center gap-3">
+                <FaFacebook className="text-blue-700 text-xl" />
+                <span className="font-medium text-gray-800">Facebook:</span>
+                <a
+                  href={contact.facebookUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-700 hover:underline hover:text-blue-800 transition-all"
+                >
                   {contact.facebookUrl}
                 </a>
               </li>
             )}
+
             {contact.instaUrl && (
-              <li>
-                Instagram:{" "}
-                <a href={contact.instaUrl} target="_blank" rel="noreferrer" className="text-pink-500">
+              <li className="flex items-center gap-3">
+                <FaInstagram className="text-pink-500 text-xl" />
+                <span className="font-medium text-gray-800">Instagram:</span>
+                <a
+                  href={contact.instaUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-pink-500 hover:underline hover:text-pink-600 transition-all"
+                >
                   {contact.instaUrl}
                 </a>
               </li>
@@ -131,6 +172,7 @@ export default function Contact() {
         ) : (
           <p className="text-gray-500 italic">No contact details available.</p>
         )}
+
       </div>
 
       {/* ---- Edit Contact Modal ---- */}
@@ -190,6 +232,6 @@ export default function Contact() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </section>
   );
 }

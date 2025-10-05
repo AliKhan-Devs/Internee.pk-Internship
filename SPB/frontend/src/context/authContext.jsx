@@ -1,18 +1,19 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import api from "../utils/api";
+import { Router } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-
   const [user, setUser] = useState(null);
+  // 1. New State: Tracks if the initial authentication check is running
+  const [loading, setLoading] = useState(true); 
 
- const login = (user) => {
-  setUser(user);
-};
-
+  const login = (userData) => { // Renamed 'user' to 'userData' for clarity
+    setUser(userData);
+  };
 
   const register = async (payload) => {
     const res = await api.post("/user/register", payload);
@@ -22,19 +23,35 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await api.post("/user/logout");
     setUser(null);
+    Router.push('/login')
   };
 
   const checkAuth = async () => {
     try {
-      const res = await api.get("/user/me"); // backend endpoint to return current user if cookie valid
-      setUser(res.data.user);
+      setLoading(true)
+      const res = await api.get("/user/me", { withCredentials: true }); 
+      console.log(res)
+      setUser(res.data);
     } catch (err) {
       setUser(null);
+    } finally {
+      // 2. Set loading to false once the check is complete (success or failure)
+      setLoading(false); 
     }
   };
+  
+  // 3. Run checkAuth only ONCE when the component mounts
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  // 4. If still loading, render nothing or a loading spinner
+  if (loading) {
+    return <div>Loading authentication...</div>; // Or a professional spinner component
+  }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, checkAuth, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, register, logout, checkAuth, isAuthenticated: !!user, loading }}>
       {children}
     </AuthContext.Provider>
   );

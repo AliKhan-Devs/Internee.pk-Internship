@@ -21,7 +21,7 @@ const cardSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         refer:'Overview'
     }
-})
+}, {timestamps:true})
 
 const Card = mongoose.model('Card',cardSchema);
 export default Card;

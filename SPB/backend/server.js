@@ -9,6 +9,10 @@ import contactRoutes from './routes/contactRoutes.js'
 import portfolioRoutes from './routes/portfolioRoutes.js'
 import sectionRoutes from './routes/sectionRoutes.js'
 import themeRoutes from './routes/themeRoutes.js'
+import analyticsRoutes from './routes/analyticsRoutes.js'
+import uploadRoutes from './routes/imageUpload.js'
+import userRoutes from './routes/userRoutes.js'
+
 import cookieParser from 'cookie-parser'
 const app = express();
 configDotenv();
@@ -16,7 +20,7 @@ configDotenv();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:5173", 
+  origin: "http://10.70.219.3:5173", 
   credentials: true
 }));
 
@@ -36,6 +40,11 @@ app.use('/contact',contactRoutes);
 app.use('/portfolio',portfolioRoutes);
 app.use('/section',sectionRoutes);
 app.use('/theme',themeRoutes);
+app.use('/upload',uploadRoutes);
+app.use('/analytics',analyticsRoutes);
+app.use('/users',userRoutes);
+
+
 
 app.listen(port,()=>{
     console.log(`PortaBuild Server is listning on http://localhost:${port}`);

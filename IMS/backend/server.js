@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 // currently allowd for all origion but can be made origion specific
 app.use(cors({
-  origin: ['http://localhost:3001', 'https://ims-pi-pied.vercel.app/'], 
+  origin: 'https://ims-pi-pied.vercel.app', 
   credentials: true
 }));
 

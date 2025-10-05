@@ -19,6 +19,89 @@ export const getPortfolio = async (req, res) => {
       .populate("themeId")
       .populate("contactId");
 
+
+    if (!portfolio) {
+      return res.json({ message: "Please try a different user name" });
+    }
+
+    // --- Profiles with Buttons ---
+    const profilesWithButtons = await Promise.all(
+      portfolio.profileIds.map(async (profile) => {
+        const buttons = await Button.find({ buttonPosition: profile._id });
+        return { ...profile.toObject(), buttons };
+      })
+    );
+
+  const activeOverviews = portfolio.overviewIds.filter(
+      (overview) => overview.isActive === true
+    );
+
+    // --- Overviews with Buttons + Cards ---
+    const overviewsWithExtras = await Promise.all(
+      activeOverviews.map(async (overview) => {
+        // Buttons for overview itself
+        const overviewButtons = await Button.find({
+          buttonPosition: overview._id,
+        });
+
+        
+        const cards = await Card.find({ cardPosition: overview._id }).sort({createdAt:-1});
+
+        // Cards with Buttons
+        const cardsWithButtons = await Promise.all(
+          cards.map(async (card) => {
+            const cardButtons = await Button.find({
+              buttonPosition: card._id,
+            });
+            return { ...card.toObject(), buttons: cardButtons };
+          })
+        );
+
+        return {
+          ...overview.toObject(),
+          buttons: overviewButtons,
+          cards: cardsWithButtons,
+        };
+      })
+    );
+
+    return res.json({
+      message: "Success",
+      portfolio: {
+        ...portfolio.toObject(),
+        profileIds: profilesWithButtons,
+        overviewIds: overviewsWithExtras,
+        user:{
+          name:user.name,
+          userName:user.userName,
+          email:user.email,
+          phone:user.phone
+        }
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      message: "Internal Server Error occurred, please try again",
+    });
+  }
+};
+
+
+
+export const getAdminPortfolio = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    // console.log(userId);
+
+    // Fetch portfolio
+    const portfolio = await Portfolio.findOne({ userId:userId })
+      .populate("profileIds")
+      .populate("overviewIds")
+      .populate("themeId")
+      .populate("contactId");
+
+    
     if (!portfolio) {
       return res.json({ message: "Please try a different user name" });
     }
@@ -75,3 +158,4 @@ export const getPortfolio = async (req, res) => {
     });
   }
 };
+
