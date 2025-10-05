@@ -1,10 +1,9 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import { VitePWA } from 'vite-plugin-pwa'; // ✅ ADD THIS LINE
-import path from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path'
 
-// https://vite.dev/config/
 export default defineConfig({
   server: {
     host: true,
@@ -19,7 +18,7 @@ export default defineConfig({
         'favicon.svg',
         'robots.txt',
         'apple-touch-icon.png',
-        'icons/icon-512x512.png'
+        'icons/icon-512x512.png',
       ],
       manifest: {
         name: 'PortaBuild',
@@ -31,39 +30,29 @@ export default defineConfig({
         orientation: 'any',
         start_url: '/',
         icons: [
-          {
-            src: 'icons/icon-48x48.png',
-            sizes: '48x48',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-72x72.png',
-            sizes: '72x72',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-96x96.png',
-            sizes: '96x96',
-            type: 'image/png'
-          },
+          { src: 'icons/icon-48x48.png', sizes: '48x48', type: 'image/png' },
+          { src: 'icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
+          { src: 'icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
           {
             src: 'icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: 'icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
-          }
+            purpose: 'any maskable',
+          },
         ],
-        workbox: {
-          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, //  Allow up to 10 MB
-        }
-      }
-    })
+      },
+
+      // 🧠 move THIS outside the manifest (top-level inside VitePWA)
+      workbox: {
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // allow up to 10 MB
+      },
+    }),
   ],
   resolve: {
     alias: {
@@ -74,4 +63,4 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
     },
   },
-});
+})
