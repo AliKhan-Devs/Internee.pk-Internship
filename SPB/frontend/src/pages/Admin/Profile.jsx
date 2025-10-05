@@ -16,6 +16,7 @@ import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import ImageUploader from "@/components/ImageUploader";
 import IconPicker from "@/components/IconPicker";
 import RenderIcon from "@/components/RenderIcon";
+import { toast } from "sonner";
 
 export default function Profile() {
   const { portfolio, addButton, updateButton, deleteButton, updatePortfolio, fetchPortfolio } =
@@ -68,8 +69,9 @@ export default function Profile() {
       // });
       fetchPortfolio();
       setEditingProfile(null);
+      toast.success("Profile Updated Successfully")
     } catch (err) {
-      console.error("Failed to update profile", err);
+      toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -97,8 +99,9 @@ export default function Profile() {
       // addButton(addingButtonProfile._id, res.data);
       fetchPortfolio();
       setAddingButtonProfile(null);
+      toast.success("Button Added Successfully")
     } catch (err) {
-      console.error("Failed to add button", err);
+      toast.error("Failed to add button");
     } finally {
       setLoading(false);
     }
@@ -121,8 +124,9 @@ export default function Profile() {
       // updateButton(editingButton.profileId, editingButton._id, res.data);
       fetchPortfolio();
       setEditingButton(null);
+      toast.success("Button Updated Successfully")
     } catch (err) {
-      console.error("Failed to edit button", err);
+      toast.error("Failed to edit button");
     } finally {
       setLoading(false);
     }
@@ -135,8 +139,9 @@ export default function Profile() {
       await api.delete(`/button/delete/${btnId}`, { withCredentials: true });
       // deleteButton(profileId, btnId);
       fetchPortfolio();
+      toast.success("Button Deleted Successfully")
     } catch (err) {
-      console.error("Failed to delete button", err);
+      toast.error("Failed to delete button");
     } finally {
       setLoading(false);
     }

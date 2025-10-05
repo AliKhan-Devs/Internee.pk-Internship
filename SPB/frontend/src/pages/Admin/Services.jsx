@@ -18,6 +18,7 @@ import ImageUploader from "@/components/ImageUploader";
 import IconPicker from "@/components/IconPicker";
 import RenderIcon from "@/components/RenderIcon";
 import { Edit, Trash } from "lucide-react";
+import { toast } from "sonner";
 
 
 export default function Services() {
@@ -46,8 +47,9 @@ export default function Services() {
             );
             fetchPortfolio();
             setEditingOverview(null);
+            toast.success("Updated Successfully")
         } catch (err) {
-            console.error("Failed to update overview", err);
+            toast.error("Failed to update overview");
         } finally {
             setLoading(false);
         }
@@ -60,9 +62,9 @@ export default function Services() {
         try {
             await api.delete(`/button/delete/${id}`, { withCredentials: true });
             fetchPortfolio();
-            alert('delete success fully');
+            toast.success('delete success fully');
         } catch (err) {
-            console.error("Failed to delete button", err);
+            toast.error("Failed to delete button");
         } finally {
             setLoading(false);
         }
@@ -79,8 +81,9 @@ export default function Services() {
             fetchPortfolio();
 
             setAddingButtonOverview(null);
+            toast.success("Button Added Successfully")
         } catch (err) {
-            console.error("Failed to add button", err);
+            toast.error("Failed to add button");
         } finally {
             setLoading(false);
         }
@@ -97,8 +100,9 @@ export default function Services() {
             );
             fetchPortfolio();
             setEditingButton(null);
+            toast.success("Button Updated Successfully")
         } catch (err) {
-            console.error("Failed to update button", err);
+            toast.error("Failed to update button");
         } finally {
             setLoading(false);
         }
@@ -116,8 +120,9 @@ export default function Services() {
             );
             fetchPortfolio();
             setAddingCardOverview(null);
+            toast.success("Card Added Successfully")
         } catch (err) {
-            console.error("Failed to add card", err);
+            toast.error("Failed to add card");
         } finally {
             setLoading(false);
         }
@@ -130,7 +135,7 @@ export default function Services() {
             fetchPortfolio();
             alert('delete success fully');
         } catch (err) {
-            console.error("Failed to delete card", err);
+            toast.error("Failed to delete card");
         } finally {
             setLoading(false);
         }
@@ -147,7 +152,7 @@ export default function Services() {
             fetchPortfolio();
             setEditingCard(null);
         } catch (err) {
-            console.error("Failed to update card", err);
+            toast.error("Failed to update card");
         } finally {
             setLoading(false);
         }

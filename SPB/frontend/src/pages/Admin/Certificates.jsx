@@ -18,6 +18,7 @@ import ImageUploader from "@/components/ImageUploader";
 import IconPicker from "@/components/IconPicker";
 import RenderIcon from "@/components/RenderIcon";
 import { Edit, Trash } from "lucide-react";
+import { toast } from "sonner";
 
 
 export default function Certificates() {
@@ -46,8 +47,9 @@ export default function Certificates() {
             );
             fetchPortfolio();
             setEditingOverview(null);
+            toast.success("Updated Successfully")
         } catch (err) {
-            console.error("Failed to update overview", err);
+            toast.error("Failed to update certificate");
         } finally {
             setLoading(false);
         }
@@ -60,9 +62,10 @@ export default function Certificates() {
         try {
             await api.delete(`/button/delete/${id}`, { withCredentials: true });
             fetchPortfolio();
-            alert('delete success fully');
+            toast.success('delete success fully');
         } catch (err) {
-            console.error("Failed to delete button", err);
+            toast.error("Failed to delete button");
+           
         } finally {
             setLoading(false);
         }
@@ -79,8 +82,9 @@ export default function Certificates() {
             fetchPortfolio();
 
             setAddingButtonOverview(null);
+            toast.success("Button Added Successfully")
         } catch (err) {
-            console.error("Failed to add button", err);
+            toast.error("Failed to add button");
         } finally {
             setLoading(false);
         }
@@ -97,8 +101,9 @@ export default function Certificates() {
             );
             fetchPortfolio();
             setEditingButton(null);
+            toast.success("Button Updated Successfully")
         } catch (err) {
-            console.error("Failed to update button", err);
+            toast.error("Failed to update button");
         } finally {
             setLoading(false);
         }
@@ -116,8 +121,9 @@ export default function Certificates() {
             );
             fetchPortfolio();
             setAddingCardOverview(null);
+            toast.success("Card Added Successfully")
         } catch (err) {
-            console.error("Failed to add card", err);
+            toast.error("Failed to add card");
         } finally {
             setLoading(false);
         }
@@ -128,9 +134,10 @@ export default function Certificates() {
         try {
             await api.delete(`/card/delete/${id}`, { withCredentials: true });
             fetchPortfolio();
-            alert('delete success fully');
+            toast.success("Delete success fully");
         } catch (err) {
-            console.error("Failed to delete card", err);
+            toast.error("Failed to delete card");
+           
         } finally {
             setLoading(false);
         }
@@ -146,8 +153,9 @@ export default function Certificates() {
             );
             fetchPortfolio();
             setEditingCard(null);
+            toast.success("Card Updated Successfully")
         } catch (err) {
-            console.error("Failed to update card", err);
+            toast.error("Failed to update card");
         } finally {
             setLoading(false);
         }

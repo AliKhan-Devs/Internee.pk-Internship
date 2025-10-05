@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import CountUp from "react-countup";
 import { useAuth } from "@/context/authContext";
+import { toast } from "sonner";
 
 // Register Chart.js components once
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
@@ -86,7 +87,7 @@ export default function Dashboard() {
           return; // Exit on success
 
         } catch (err) {
-          console.error(`Attempt ${attempts + 1} failed:`, err.message);
+          toast.error(`Attempt ${attempts + 1} failed:`);
           if (attempts === maxRetries - 1) {
             setError(`Failed to fetch analytics after ${maxRetries} attempts.`);
             setLoading(false);
@@ -183,7 +184,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-12 max-w-7xl mx-auto p-6 lg:p-10 bg-gray-50 min-h-screen">
+    <div className="mb-16 md:mb-0 space-y-12 max-w-7xl mx-auto p-2 md:p-6 lg:p-10 bg-gray-50 min-h-screen overflow-hidden">
 
       {/* Header and Status */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-6 border-gray-200">
@@ -259,17 +260,24 @@ export default function Dashboard() {
       )}
 
       {/* Charts Section */}
-      <div className="grid lg:grid-cols-1 gap-6">
-        <Card className="shadow-2xl border border-gray-100">
-          <CardContent className="p-6 h-[400px]">
-            {loading ? (
-              <div className="h-full flex items-center justify-center text-gray-500">Loading chart data...</div>
-            ) : (
-              <Line data={chartData} options={chartOptions} />
-            )}
-          </CardContent>
-        </Card>
-      </div>
+<div className="w-full overflow-x-auto">
+  <div className="min-w-[300px] lg:min-w-0 grid lg:grid-cols-1 gap-6">
+    <Card className="shadow-2xl border border-gray-100 w-full">
+      <CardContent className="p-4 sm:p-6 h-[400px]">
+        {loading ? (
+          <div className="h-full flex items-center justify-center text-gray-500">
+            Loading chart data...
+          </div>
+        ) : (
+          <div className="w-full h-full">
+            <Line data={chartData} options={chartOptions} />
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  </div>
+</div>
+
 
       {/* Quick Actions */}
       <div className="mt-10 p-6 bg-white rounded-xl shadow-lg border border-gray-100">
@@ -295,14 +303,16 @@ export default function Dashboard() {
             <FaPalette /> Customize Design/Theme
           </Button>
 
+          <Link
+          to={`/users/${user?.userName}`}>
           <Button
             as={Link}
-            to={`/${portfolio?.userName}`}
+            to={`/users/${user?.userName}`}
             variant="secondary"
             className="flex items-center gap-2 px-6 py-3 shadow-md bg-green-600 hover:bg-green-700 text-white transition-transform transform hover:scale-[1.01]"
           >
             <FaExternalLinkAlt /> Share/View Live Site
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </div>

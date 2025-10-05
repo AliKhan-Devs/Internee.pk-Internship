@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FiEdit } from "react-icons/fi";
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
+import { toast } from "sonner";
 
 export default function Contact() {
   const { portfolio, updatePortfolio, fetchPortfolio } = usePortfolio();
@@ -56,8 +57,10 @@ export default function Contact() {
       //   updatePortfolio({ contactId: res.data });
       fetchPortfolio();
       setEditingContact(false);
+      toast.success("Updated Successfully")
     } catch (err) {
-      console.error("Failed to update contact", err);
+      toast.error("Failed to Updated")
+     
     } finally {
       setLoading(false);
     }

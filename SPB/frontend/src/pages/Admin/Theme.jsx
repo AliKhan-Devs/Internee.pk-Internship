@@ -4,6 +4,7 @@ import api from "@/utils/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2, Zap, Palette, Sun, Moon } from "lucide-react"; // Added new icons
+import { toast } from "sonner";
 
 /**
  * Helper function to provide sensible defaults for theme attributes.
@@ -98,10 +99,11 @@ const useThemeUpdater = (currentTheme, fetchPortfolio) => {
             console.log('Updating theme with:', themeToUpdate);
             await api.put(`/theme/update-theme/${currentTheme._id}`, themeToUpdate, { withCredentials: true });
             await fetchPortfolio(); // Sync context
-            setStatusMessage({ type: 'success', text: "Theme updated successfully! Preview and context synced." });
+            // setStatusMessage({ type: 'success', text: "Theme updated successfully! Preview and context synced." });
+            toast.success('Theme updated Successfully')
         } catch (err) {
-            console.error("Failed to update theme", err);
-            setStatusMessage({ type: 'error', text: "Failed to update theme. Please check your network or API status." });
+            // setStatusMessage({ type: 'error', text: "Failed to update theme. Please check your network or API status." });
+            toast.error("Error Updating theme please try later")
         } finally {
             setLoading(false);
             setTimeout(() => setStatusMessage(null), 5000);

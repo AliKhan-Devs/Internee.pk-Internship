@@ -4,6 +4,7 @@ import api from "@/utils/api";
 import Navbar from "@/components/layouts/Navbar";
 import RenderIcon from "@/components/RenderIcon";
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
+import NotFound from "./NotFoundPage";
 
 
 // =====================================
@@ -50,7 +51,7 @@ export default function ViewPortfolio() {
     }
   }, [username, portfolio]);
   if (loading) return <p className="text-center mt-20 text-xl font-medium">Loading portfolio...</p>;
-  if (!portfolio) return <p className="text-center mt-20 text-xl font-medium">Portfolio not found for user: {username}</p>;
+  if (!portfolio) return <NotFound/>
 
   // Destructure Theme and Section Data
   const theme = portfolio.themeId;
@@ -279,7 +280,7 @@ export default function ViewPortfolio() {
                   <p className="text-xl font-semibold mb-6" style={{ color: secondary }}>
                     {profileAbout.tagline}
                   </p>
-                  <p className={`text-lg ${defaultLineHeight} mb-8 max-w-xl md:max-w-none`} style={{ color: textSecondary }}>
+                  <p className={`text-lg text-justify ${defaultLineHeight} mb-8 max-w-xl md:max-w-none`} style={{ color: textSecondary }}>
                     {profileAbout.description}
                   </p>
 

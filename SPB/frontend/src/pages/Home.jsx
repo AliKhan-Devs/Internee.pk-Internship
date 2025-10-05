@@ -31,7 +31,7 @@ export default function Home() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.7 }}
-                            className="text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight"
+                            className="text-4xl lg:text-6xl font-extrabold text-gray-900 leading-tight"
                         >
                             <span className="text-indigo-600">Launch Your Custom Portfolio</span> in Minutes.
                         </motion.h1>
@@ -53,7 +53,7 @@ export default function Home() {
                         >
                             <Button
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-transform transform hover:scale-[1.02] font-semibold"
-                                onClick={() => (window.location.href = "/signup")} 
+                                onClick={() => (window.location.href = "/register")} 
                             >
                                 Start Building Now 
                                 <FiArrowRight className="ml-2 h-5 w-5" />
@@ -61,9 +61,9 @@ export default function Home() {
                             <Button
                                 variant="outline"
                                 className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 text-lg px-8 py-6"
-                                onClick={() => (window.location.href = "/explore-themes")} 
+                                onClick={() => (window.location.href = "/users")} 
                             >
-                                Explore Themes
+                                View Portfolios
                             </Button>
                         </motion.div>
                     </div>
@@ -76,7 +76,7 @@ export default function Home() {
                             initial={{ opacity: 0, scale: 0.9, x: 50 }}
                             animate={{ opacity: 1, scale: 1, x: 0 }}
                             transition={{ duration: 1.0, ease: "easeOut" }}
-                            className="absolute z-0 min-w-[300px] max-w-[450px] h-[280px] lg:w-[480px] lg:h-[300px] left-1/2 -translate-x-1/2 -translate-y-1/4 md:translate-y-0"
+                            className="absolute z-0 min-w-[330px] max-w-[450px] h-[280px] lg:w-[480px] lg:h-[300px] left-1/2 -translate-x-1/2 -translate-y-1/4 md:translate-y-0"
                         >
                             <div className="w-full h-full rounded-2xl shadow-2xl overflow-hidden border-4 border-gray-300 bg-white relative">
                                 {/* Realistic Laptop top bar */}

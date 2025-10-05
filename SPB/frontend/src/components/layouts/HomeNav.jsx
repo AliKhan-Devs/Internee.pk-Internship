@@ -7,23 +7,27 @@ import { RiBuilding2Line } from "react-icons/ri";
 import { MdOutlineHome, MdContactPhone } from "react-icons/md";
 import { IoPeopleSharp } from "react-icons/io5";
 import { HiOutlineSparkles } from "react-icons/hi";
-import { FaLayerGroup } from "react-icons/fa";
+import { FaHome, FaLayerGroup, FaLocationArrow } from "react-icons/fa";
 
 export default function HomeLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
-    { name: "Overview", href: "#overview", icon: FaLayerGroup },
-    { name: "Features", href: "/features", icon: HiOutlineSparkles },
-    { name: "Users", href: "/users", icon: IoPeopleSharp },
-    { name: "Contact", href: "#contact", icon: MdContactPhone },
+    { name: "Home", path: "/", icon: FaHome },
+    { name: "Users", path: "/users", icon: IoPeopleSharp },
+    { name: "Overview", path: "/overview", icon: FaLocationArrow },
+    { name: "Features", path: "/features", icon: HiOutlineSparkles },
+    { name: "Contact", path: "#contact", icon: MdContactPhone },
+
   ];
 
   const bottomNavItems = [
-    { name: "Home", href: "#overview", icon: MdOutlineHome },
-    { name: "Features", href: "#features", icon: HiOutlineSparkles },
-    { name: "Users", href: "/users", icon: IoPeopleSharp },
-    { name: "Contact", href: "#contact", icon: MdContactPhone },
+    { name: "Users", path: "/users", icon: IoPeopleSharp },
+    { name: "Overview", path: "/overview", icon: FaLocationArrow },
+    { name: "Home", path: "/", icon: FaHome },
+    { name: "Features", path: "/features", icon: HiOutlineSparkles },
+
+    { name: "Contact", path: "#contact", icon: MdContactPhone },
   ];
 
   return (
@@ -33,9 +37,9 @@ export default function HomeLayout({ children }) {
         <div className="max-w-7xl mx-auto w-full px-8 py-4 flex justify-between items-center">
           {/* Logo */}
           <Link to={'/'}>
-          <h1 className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent flex items-center gap-1">
-            PortaBuild <RiBuilding2Line className="inline-block text-blue-500" />
-          </h1></Link>
+            <h1 className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent flex items-center gap-1">
+              PortaBuild <RiBuilding2Line className="inline-block text-blue-500" />
+            </h1></Link>
 
           {/* Nav Links */}
           <nav className="flex items-center gap-8">
@@ -60,9 +64,8 @@ export default function HomeLayout({ children }) {
 
       {/* ===== Sidebar for Mobile ===== */}
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-white border-r border-blue-100 flex flex-col shadow-lg transform transition-transform duration-300 z-40 rounded-tr-3xl rounded-br-3xl overflow-hidden md:hidden ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 w-64 bg-white border-r border-blue-100 flex flex-col shadow-lg transform transition-transform duration-300 z-40 rounded-tr-3xl rounded-br-3xl overflow-hidden md:hidden ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Logo */}
         <div className="px-6 py-5 text-2xl font-extrabold border-b border-blue-100 bg-gradient-to-r from-blue-600 to-blue-400 text-white">
@@ -130,16 +133,19 @@ export default function HomeLayout({ children }) {
       </main>
 
       {/* ===== Bottom Navbar (Mobile) ===== */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-blue-100 md:hidden flex justify-around items-center py-2 px-2 z-30">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-blue-100 md:hidden flex justify-around items-center py-2 px-2 z-50 rounded-t-3xl">
         {bottomNavItems.map((item) => {
+          const isActive = location.pathname === item.path;
           const Icon = item.icon;
           return (
             <Link
               key={item.name}
-              to={item.href}
-              className="flex flex-col items-center text-xs font-medium text-gray-500 hover:text-blue-600 transition-all"
+              to={item.path}
+              className={`flex flex-col items-center text-xs font-medium transition-colors duration-200 ${isActive ? "text-blue-600" : "text-gray-500 hover:text-blue-600"
+                }`}
             >
-              <Icon className="w-5 h-5 mb-1" />
+              <div className={`${isActive ? "" : "hidden"} w-[24px] h-[20px] absolute bg-transparent border-t-2 border-t-blue-600 rounded-t-full transition-appearence duration-300`}></div>
+              <Icon className={`w-5 h-5 mb-1 mt-3 ${isActive ? "text-blue-600" : "text-gray-500"}`} />
               {item.name}
             </Link>
           );

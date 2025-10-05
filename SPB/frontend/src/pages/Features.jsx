@@ -17,6 +17,7 @@ import {
 import { motion } from "framer-motion";
 import desktopPng from '../../public/desktop.JPG'
 import dashboardJpg from '../../public/dashboard.JPG'
+import { FaRocket } from "react-icons/fa";
 export default function Features() {
   const features = [
     {
@@ -54,14 +55,14 @@ export default function Features() {
   return (
     <>
       <HomeNav />
-      <div className="min-h-screen pt-20 pb-16">
+      <div className="min-h-screen pt-12 md:pt-20 pb-16">
         {/* Hero Section */}
         <section className="text-center px-6 py-16 max-w-5xl mx-auto space-y-6">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold"
+            className="text-3xl md:text-5xl font-bold"
           >
             Build Your Portfolio. <span className="text-blue-600">Effortlessly.</span>
           </motion.h1>
@@ -142,7 +143,7 @@ export default function Features() {
         {/* Call to Action */}
         <section className="mt-24 text-center px-6">
           <h2 className="text-3xl font-bold mb-4">
-            Start Building Your Portfolio Today 🚀
+            Start Building Your Portfolio Today <FaRocket className="inline text-blue-600" size={30}/>
           </h2>
           <p className="text-gray-600 mb-6">
             Join hundreds of creators already showcasing their work with PortaBuild.

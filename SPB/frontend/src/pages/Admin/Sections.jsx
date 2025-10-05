@@ -17,6 +17,7 @@ import { FiRotateCcw } from "react-icons/fi";
 import ImageUploader from "@/components/ImageUploader";
 import IconPicker from "@/components/IconPicker";
 import RenderIcon from "@/components/RenderIcon";
+import { toast } from "sonner";
 
 export default function Overview() {
   const {
@@ -50,8 +51,9 @@ export default function Overview() {
       );
       fetchPortfolio();
       setEditingOverview(null);
+      toast.success("Updated Successfully")
     } catch (err) {
-      console.error("Failed to update overview", err);
+      toast.error("Failed to update overview");
     } finally {
       setLoading(false);
     }
@@ -64,9 +66,9 @@ export default function Overview() {
     try {
       await api.delete(`/button/delete/${id}`, { withCredentials: true });
       fetchPortfolio();
-      alert('delete success fully');
+      toast.success('delete success fully');
     } catch (err) {
-      console.error("Failed to delete button", err);
+      toast.error("Failed to delete button");
     } finally {
       setLoading(false);
     }
