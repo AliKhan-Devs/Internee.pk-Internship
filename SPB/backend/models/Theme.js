@@ -5,119 +5,62 @@ const themeSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    
-    // =====================================
-    // 🎨 Color & Depth 
-    // =====================================
-    primaryColor: {
-        type: String, // e.g., '#1F2937' (Dark Gray/Card BG)
-        required: true
-    },
-    secondaryColor: {
-        type: String, // e.g., '#3B82F6' (Strong accent for buttons/highlights)
-        required: true
-    },
-    accentColor: {
-        type: String, // NEW: Third, high-contrast color for minor highlights (e.g., Timeline Dots)
-        required: false
-    },
-    backgroundColor: {
-        type: String, // e.g., '#F9FAFB' (Light background)
-        required: true
-    },
-    cardBackgroundColor: {
-        type: String, // e.g., '#FFFFFF' (White for cards, distinct from main background)
-        required: true
-    },
-    textPrimaryColor: {
-        type: String, // e.g., '#111827' (Dark text for main headings)
-        required: true
-    },
-    textSecondaryColor: {
-        type: String, // e.g., '#6B7280' (Muted text for paragraphs/descriptions)
-        required: true
-    },
-    primaryHoverColor: {
-        type: String, // E.g., a slightly lighter/darker shade of primary/secondary for hover
-        required: true // **Making this required for guaranteed polish**
-    },
-    borderColor: {
-        type: String, // e.g., '#E5E7EB' (Subtle line between elements)
-        required: true
-    },
 
     // =====================================
-    // ✒️ Typography & Readability
+    // 🎨 Core Colors
     // =====================================
-    fontFamily: {
-        type: String, 
-        required: false // Stored as a CSS font-family stack: 'Inter, sans-serif'
-    },
-    headingWeight: {
-        type: String, 
-        required: true // Tailwind class: "font-extrabold" or "font-bold"
-    },
-    headingSize: {
-        type: String, 
-        required: false // Can store a base Tailwind class if needed: "text-5xl"
-    },
-    bodySize: {
-        type: String, 
-        required: true // Tailwind class: "text-base" or "text-lg"
-    },
-    lineHeightBase: {
-        type: String, 
-        required: false // Tailwind class: "leading-relaxed"
-    },
+    primaryColor: { type: String, required: true },        // Main brand color
+    secondaryColor: { type: String, required: true },      // Accent for highlights/buttons
+    accentColor: { type: String, required: false },        // Minor highlight (dots, small icons)
+    backgroundColor: { type: String, required: true },     // Page background
+    cardBackgroundColor: { type: String, required: true }, // Cards / containers
+    textPrimaryColor: { type: String, required: true },    // Headings
+    textSecondaryColor: { type: String, required: true },  // Paragraphs / muted
+    borderColor: { type: String, required: true },         // Subtle separators
 
     // =====================================
-    // ✨ Layout & Interactivity
+    // 🌈 Extended Colors (NEW)
     // =====================================
-    layoutType: {
-        type: String,
-        required: true // e.g., 'minimal' or 'detailed'
-    },
-    sectionSpacing: {
-        type: String, // Tailwind class: "py-24"
-        required: false
-    },
-    containerWidth: {
-        type: String, // Tailwind class: "max-w-7xl"
-        required: false
-    },
-    cardBorderRadius: {
-        type: String,
-        required: false // CSS value, e.g., "0.5rem" or "1rem"
-    },
-    
-    // Depth & Interaction
-    shadowIntensity: {
-        type: String, // Tailwind class, e.g., "shadow-xl" or "shadow-none"
-        required: true
-    },
-    buttonStyle: {
-        type: String, // e.g., "pill" or "square"
-        required: true
-    },
-    transitionDuration: {
-        type: String, // Tailwind class, e.g., "duration-300"
-        required: false
-    },
-    buttonShadowStyle: {
-        type: String, // Tailwind class, e.g., "hover:shadow-lg"
-        required: false
-    },
-    iconStyle: {
-        type: String, // e.g., 'outline', 'solid', or 'color'
-        required: false
-    },
-    // NEW: Style for secondary/outline buttons (e.g., 'border-secondary')
-    secondaryButtonStyle: { 
-        type: String,
-        required: false
-    }
-    
+    gradientPrimary: { type: String, required: false },    // e.g., "bg-gradient-to-r from-blue-500 to-indigo-600"
+    gradientSecondary: { type: String, required: false },  // For hero/CTA sections
+    gradientCard: { type: String, required: false },       // For card backgrounds
+    dividerColor: { type: String, required: false },       // For section dividers
+
+    // Button Colors
+    buttonTextColor: { type: String, required: false },
+    buttonHoverColor: { type: String, required: false },
+    secondaryButtonColor: { type: String, required: false }, 
+    secondaryButtonTextColor: { type: String, required: false },
+
+    // =====================================
+    // ✒️ Typography
+    // =====================================
+    fontFamily: { type: String, required: false },          // CSS font stack
+    headingWeight: { type: String, required: true },        // e.g., "font-extrabold"
+    headingSize: { type: String, required: false },         // e.g., "text-5xl"
+    bodySize: { type: String, required: true },             // e.g., "text-base"
+    lineHeightBase: { type: String, required: false },      // e.g., "leading-relaxed"
+    headingTransform: { type: String, required: false },    // e.g., "uppercase" | "capitalize"
+
+    // =====================================
+    // ✨ Layout & Depth
+    // =====================================
+    layoutType: { type: String, required: true },          // "minimal" | "detailed"
+    sectionSpacing: { type: String, required: false },     // Tailwind: "py-24"
+    containerWidth: { type: String, required: false },     // Tailwind: "max-w-7xl"
+    cardBorderRadius: { type: String, required: false },   // "0.5rem" | "1rem"
+
+    shadowIntensity: { type: String, required: true },     // "shadow-xl"
+    buttonStyle: { type: String, required: true },         // "pill" | "square"
+    buttonShadowStyle: { type: String, required: false },  // "hover:shadow-lg"
+    transitionDuration: { type: String, required: false }, // "duration-300"
+
+    // =====================================
+    // 🌀 Animations & Icons
+    // =====================================
+    iconStyle: { type: String, required: false },          // "outline" | "solid"
+    animationStyle: { type: String, required: false },     // "fade-up" | "slide-in"
 });
 
-const Theme = mongoose.model('Theme', themeSchema);
+const Theme = mongoose.model("Theme", themeSchema);
 export default Theme;

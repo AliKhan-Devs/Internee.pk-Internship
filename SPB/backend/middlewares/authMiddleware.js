@@ -3,11 +3,11 @@ import jwt from "jsonwebtoken";
 export const protect = async (req, res, next) => {
   try {
     let token;
-    console.log(req.cookies);
+    // console.log(req.cookies);
     // ✅ Get token from HttpOnly cookie
     if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
-      console.log("token from cookies ",token)
+      
     }
 
     if (!token) {
@@ -19,6 +19,7 @@ export const protect = async (req, res, next) => {
 
     // Attach user payload (id, username, etc.)
     req.user = decoded;
+   
     next();
   } catch (error) {
     console.error("Auth error:", error);

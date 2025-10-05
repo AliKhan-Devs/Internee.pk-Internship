@@ -13,6 +13,9 @@ const buttonSchema = mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         refer:'onModal'
     },
+    buttonIcon:{
+        type:String
+    },
     onModal:{
         type:String,
         require:true,

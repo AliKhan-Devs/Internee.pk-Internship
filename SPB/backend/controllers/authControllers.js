@@ -25,6 +25,8 @@ export const registerUser = async (req, res) => {
     const portfolio = await generatePortfolio(savedUser);
     return res.status(200).json({ message: 'Account Created Successfully', user: newUser, portfolio: portfolio });
 }
+
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -77,6 +79,22 @@ export const logoutUser = async (req, res) => {
     maxAge: 0
   });
   res.status(200).json({ message: "Logout successful" });
+}
+
+export const getUserById=async(req, res) => {
+  const userId = req.user.id;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(200).json({ message: "User not found" });
+      }
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    });
 }
 
 

@@ -13,6 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import ImageUploader from "@/components/ImageUploader";
+import IconPicker from "@/components/IconPicker";
+import RenderIcon from "@/components/RenderIcon";
 
 export default function Profile() {
   const { portfolio, addButton, updateButton, deleteButton, updatePortfolio, fetchPortfolio } =
@@ -35,6 +38,7 @@ export default function Profile() {
   const [buttonData, setButtonData] = useState({
     text: "",
     link: "",
+    buttonIcon: "",
   });
 
   // ---- Profile Handlers ----
@@ -73,7 +77,7 @@ export default function Profile() {
 
   // ---- Button Handlers ----
   const handleOpenAddButton = (profile) => {
-    setButtonData({ text: "", link: "" });
+    setButtonData({ text: "", link: "",buttonIcon:"" });
     setAddingButtonProfile(profile);
   };
 
@@ -101,7 +105,7 @@ export default function Profile() {
   };
 
   const handleOpenEditButton = (profileId, btn) => {
-    setButtonData({ text: btn.text, link: btn.link });
+    setButtonData({ text: btn.text, link: btn.link, buttonIcon: btn.buttonIcon });
     setEditingButton({ ...btn, profileId });
   };
 
@@ -139,7 +143,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="space-y-10">
+    <section className="mb-16 md:mb-0 space-y-10">
       <h1 className="text-3xl font-bold">Manage Your Profile</h1>
 
       {profiles.map((profile) => (
@@ -159,7 +163,7 @@ export default function Profile() {
               <FiEdit className="mr-2" /> Edit Section
             </Button>
           </div>
-          <img src={profile.profileImg} alt="" className="w-24 h-24"/>
+          <img src={profile.profileImg} alt="" className="w-24 h-24" />
           <p className="text-gray-600 mb-2">{profile.heading}</p>
           <p className="text-gray-600 mb-2 italic">{profile.tagline}</p>
           <p className="text-gray-600">{profile.description}</p>
@@ -178,7 +182,7 @@ export default function Profile() {
                     rel="noopener noreferrer"
                     className="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition"
                   >
-                    {btn.text}
+                    <RenderIcon iconName={btn.buttonIcon} size={20} color={'#fff'} className={'inline'}/> {btn.text}
                   </a>
                   <div className="flex gap-2">
                     <Button
@@ -213,6 +217,7 @@ export default function Profile() {
         </div>
       ))}
 
+
       {/* ---- Profile Edit Modal ---- */}
       <Dialog
         open={!!editingProfile}
@@ -223,7 +228,7 @@ export default function Profile() {
             <DialogTitle>Edit Profile Section</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Heading</Label>
               <Input
                 value={formData.heading}
@@ -232,7 +237,7 @@ export default function Profile() {
                 }
               />
             </div>
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Tagline</Label>
               <Input
                 value={formData.tagline}
@@ -241,7 +246,7 @@ export default function Profile() {
                 }
               />
             </div>
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Description</Label>
               <Input
                 value={formData.description}
@@ -250,15 +255,21 @@ export default function Profile() {
                 }
               />
             </div>
-            <div>
-              <Label>Profile Image URL</Label>
-              <Input
+            <div className="flex flex-col gap-2">
+              <Label>Profile Image</Label>
+              {/* <Input
                 value={formData.profileImg}
                 onChange={(e) =>
                   setFormData({ ...formData, profileImg: e.target.value })
                 }
+              /> */}
+              <ImageUploader
+                onUpload={(url) => setFormData((prev) => ({ ...prev, profileImg: url }))}
+                previosImgUrl={formData.profileImg}
               />
+
             </div>
+           
           </div>
           <DialogFooter>
             <Button onClick={handleSaveProfile} disabled={loading}>
@@ -278,7 +289,7 @@ export default function Profile() {
             <DialogTitle>Add New Button</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Button Text</Label>
               <Input
                 value={buttonData.text}
@@ -287,13 +298,20 @@ export default function Profile() {
                 }
               />
             </div>
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Button Link</Label>
               <Input
                 value={buttonData.link}
                 onChange={(e) =>
                   setButtonData({ ...buttonData, link: e.target.value })
                 }
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <IconPicker
+                label="Icon"
+                value={buttonData.buttonIcon}
+                onChange={(iconName) => setButtonData({ ...buttonData, buttonIcon: iconName })}
               />
             </div>
           </div>
@@ -315,7 +333,7 @@ export default function Profile() {
             <DialogTitle>Edit Button</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Button Text</Label>
               <Input
                 value={buttonData.text}
@@ -324,13 +342,20 @@ export default function Profile() {
                 }
               />
             </div>
-            <div>
+            <div className="flex flex-col gap-2">
               <Label>Button Link</Label>
               <Input
                 value={buttonData.link}
                 onChange={(e) =>
                   setButtonData({ ...buttonData, link: e.target.value })
                 }
+              />
+            </div>
+            <div>
+              <IconPicker
+                label="Icon"
+                value={buttonData.buttonIcon}
+                onChange={(iconName) => setButtonData({ ...buttonData, buttonIcon: iconName })}
               />
             </div>
           </div>
@@ -341,7 +366,7 @@ export default function Profile() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </section>
   );
 }
 
