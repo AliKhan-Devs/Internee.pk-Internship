@@ -19,10 +19,16 @@ configDotenv();
 
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(cors({
-  origin: ['https://portabuild.vercel.app', 'http://localhost:5173'],
-  credentials: true
+  origin: (origin, callback) => {
+    const allowed = ['https://portabuild.vercel.app', 'http://localhost:3000'];
+    if (!origin || allowed.includes(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
 }));
+
 
 
 const port = process.env.PORT;
