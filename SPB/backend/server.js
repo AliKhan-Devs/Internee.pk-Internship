@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: (origin, callback) => {
-    const allowed = ['https://portabuild.vercel.app', 'http://localhost:3000'];
+    const allowed = ['https://portabuild.vercel.app', 'http://localhost:5173'];
     if (!origin || allowed.includes(origin)) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
   },
