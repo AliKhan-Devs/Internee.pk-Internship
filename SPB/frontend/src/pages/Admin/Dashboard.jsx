@@ -72,7 +72,7 @@ export default function Dashboard() {
       while (attempts < maxRetries) {
         try {
           // Using fetch API directly to avoid dependency on an external 'api' utility
-          const response = await api.get(`/analytics/views/${portfolio?._id}`);
+          const response = await api.get(`/analytics/views/${portfolio?._id}`,{withCredentials:true});
           console.log('respnose',response);
           if (!response.status || response.status >= 400) {
             const errorData = response;
