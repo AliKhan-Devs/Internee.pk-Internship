@@ -75,7 +75,7 @@ export const logoutUser = async (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "None",
     maxAge: 0
   });
   res.status(200).json({ message: "Logout successful" });
