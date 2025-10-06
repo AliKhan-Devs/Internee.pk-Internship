@@ -20,7 +20,7 @@ configDotenv();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: ['https://portabuild.vercel.app', 'http://localhost:3000'],
+  origin: ['https://portabuild.vercel.app', 'http://localhost:5173'],
   credentials: true
 }));
 
