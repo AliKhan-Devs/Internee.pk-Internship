@@ -4,26 +4,26 @@ import { generatePortfolio } from "../utils/generatePortfolioInitialy.js";
 import cookie from "cookie";
 // Register a new user
 export const registerUser = async (req, res) => {
-    const { name, userName, email, phone, password, } = req.body;
+  const { name, userName, email, phone, password, } = req.body;
 
-    if (!password) {
-        throw Error('Password is required');
-    }
+  if (!password) {
+    throw Error('Password is required');
+  }
 
-    const hashedPassword = await generateHash(password);
-    if (!hashedPassword) {
-        throw Error('Error please try again');
-    }
-    const newUser = {
-        name,
-        userName,
-        email,
-        phone,
-        password: hashedPassword
-    };
-    const savedUser = await User.create(newUser);
-    const portfolio = await generatePortfolio(savedUser);
-    return res.status(200).json({ message: 'Account Created Successfully', user: newUser, portfolio: portfolio });
+  const hashedPassword = await generateHash(password);
+  if (!hashedPassword) {
+    throw Error('Error please try again');
+  }
+  const newUser = {
+    name,
+    userName,
+    email,
+    phone,
+    password: hashedPassword
+  };
+  const savedUser = await User.create(newUser);
+  const portfolio = await generatePortfolio(savedUser);
+  return res.status(200).json({ message: 'Account Created Successfully', user: newUser, portfolio: portfolio });
 }
 
 
@@ -50,9 +50,10 @@ export const loginUser = async (req, res) => {
     res.cookie("token", jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
 
     // 5. Return safe user info (don’t expose password!)
     res.json({
@@ -74,14 +75,14 @@ export const loginUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "None",
     maxAge: 0
   });
   res.status(200).json({ message: "Logout successful" });
 }
 
-export const getUserById=async(req, res) => {
+export const getUserById = async (req, res) => {
   const userId = req.user.id;
 
   User.findById(userId)
@@ -96,5 +97,3 @@ export const getUserById=async(req, res) => {
       res.status(500).json({ message: "Server error" });
     });
 }
-
-
