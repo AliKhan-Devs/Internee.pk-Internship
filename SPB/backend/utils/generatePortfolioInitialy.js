@@ -115,23 +115,40 @@ export const generatePortfolio = async (user) => {
     });
 
     // 7. Assign default theme (seed one if not present)
-    const defaultTheme =
-      (await Theme.findOne()) ||
-      (await Theme.create({
-        name: "Dark Minimal",
-        primaryColor: "#4F46E5",
-        secondaryColor: "#818CF8",
-        backgroundColor: "#111827",
-        cardBackgroundColor: "#1F2937",
-        textPrimaryColor: "#F9FAFB",
-        textSecondaryColor: "#9CA3AF",
-        borderColor: "#374151",
-        headingSize: "2rem",
-        bodySize: "1rem",
-        buttonStyle: "rounded",
-        shadowStyle: "soft",
-        layoutType: "container",
-      }));
+const defaultTheme =
+  (await Theme.findOne()) ||
+  (await Theme.create({
+ name: "Royal Noir",
+    // Black & Gold Luxury
+    primaryColor: "#D97706",         // Premium Amber Gold
+    secondaryColor: "#FACC15",       // Bright Yellow Gold
+    accentColor: "#FDE68A",          // Subtle Gold Highlight
+    backgroundColor: "#0B0B0B",      // Deep Black
+    cardBackgroundColor: "#161616",  // Soft Black
+
+    textPrimaryColor: "#F9FAFB",
+    textSecondaryColor: "#A1A1AA",
+    borderColor: "#262626",
+    dividerColor: "#D97706",
+    buttonTextColor: "#0B0B0B",
+    buttonHoverColor: "#EAB308",
+
+    gradientPrimary: "linear-gradient(135deg, #0B0B0B, #161616, #262626)",
+    gradientCard: "linear-gradient(to top, #161616, #0B0B0B)",
+    shadowIntensity: "shadow-[0_0_50px_rgba(217,119,6,0.4)]",
+
+    fontFamily: "Playfair Display, serif",
+    headingWeight: "font-bold",
+    headingTransform: "uppercase",
+    sectionSpacing: "py-16 md:py-35",
+    containerWidth: "max-w-7xl",
+    cardBorderRadius: "0.75rem",
+    buttonStyle: "rounded",
+    buttonShadowStyle: "hover:shadow-[0_0_25px_rgba(250,204,21,0.8)]",
+    transitionDuration: "duration-500",
+    animationStyle: "slide-up",
+  }));
+
 
     // 8. Create portfolio linking everything
     const portfolio = await Portfolio.create({
