@@ -115,23 +115,64 @@ export const generatePortfolio = async (user) => {
     });
 
     // 7. Assign default theme (seed one if not present)
-    const defaultTheme =
-      (await Theme.findOne()) ||
-      (await Theme.create({
-        name: "Dark Minimal",
-        primaryColor: "#4F46E5",
-        secondaryColor: "#818CF8",
-        backgroundColor: "#111827",
-        cardBackgroundColor: "#1F2937",
-        textPrimaryColor: "#F9FAFB",
-        textSecondaryColor: "#9CA3AF",
-        borderColor: "#374151",
-        headingSize: "2rem",
-        bodySize: "1rem",
-        buttonStyle: "rounded",
-        shadowStyle: "soft",
-        layoutType: "container",
-      }));
+const defaultTheme =
+  (await Theme.findOne()) ||
+  (await Theme.create({
+    name: "Dark Minimal",
+
+    // =====================================
+    // 🎨 Core Colors
+    // =====================================
+    primaryColor: "#4F46E5",
+    secondaryColor: "#818CF8",
+    accentColor: "#F59E0B",            // Optional minor accent
+    backgroundColor: "#111827",
+    cardBackgroundColor: "#1F2937",
+    textPrimaryColor: "#F9FAFB",
+    textSecondaryColor: "#9CA3AF",
+    borderColor: "#374151",
+
+    // =====================================
+    // 🌈 Extended Colors (Optional)
+    // =====================================
+    gradientPrimary: "linear-gradient(to right, #4F46E5, #818CF8)",
+    gradientSecondary: "linear-gradient(to right, #6366F1, #8B5CF6)",
+    gradientCard: "linear-gradient(to bottom, #1F2937, #111827)",
+    dividerColor: "#4B5563",
+    buttonTextColor: "#FFFFFF",
+    buttonHoverColor: "#6366F1",
+    secondaryButtonColor: "#818CF8",
+    secondaryButtonTextColor: "#F9FAFB",
+
+    // =====================================
+    // ✒️ Typography
+    // =====================================
+    fontFamily: "'Inter', sans-serif",
+    headingWeight: "font-extrabold",
+    headingSize: "2rem",
+    bodySize: "1rem",
+    lineHeightBase: "1.5",
+    headingTransform: "uppercase",
+
+    // =====================================
+    // ✨ Layout & Depth
+    // =====================================
+    layoutType: "minimal",
+    sectionSpacing: "py-24",
+    containerWidth: "max-w-7xl",
+    cardBorderRadius: "0.5rem",
+    shadowIntensity: "shadow-xl",
+    buttonStyle: "rounded",
+    buttonShadowStyle: "hover:shadow-lg",
+    transitionDuration: "duration-300",
+
+    // =====================================
+    // 🌀 Animations & Icons
+    // =====================================
+    iconStyle: "outline",
+    animationStyle: "fade-up",
+  }));
+
 
     // 8. Create portfolio linking everything
     const portfolio = await Portfolio.create({
