@@ -11,12 +11,21 @@ import {
   UserIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import { useEffect } from 'react';
 
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const {user} = useAuth();
+
+//  if logedin so do not let him to visit logedin agani 
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const {
     register,

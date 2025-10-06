@@ -45,16 +45,17 @@ export const loginUser = async (req, res) => {
   if (!token) {
     return res.status(500).json('Error Occured please try agani');
   }
-  // 4. Set HttpOnly cookie
-  res.cookie("token", jwtToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
+   // 4. Set HttpOnly cookie
+       res.cookie("token", token, {
+         httpOnly: true,
+         secure: process.env.NODE_ENV === "production",
+         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+         maxAge: 7 * 24 * 60 * 60 * 1000,
+       });
 
-  return res.status(200).json({
-    message: 'Login Successfull',
+
+  return res.status(200).json({ 
+    message: 'Login Successfull', 
     user: {
       _id: user._id,
       name: user.name,
@@ -86,15 +87,15 @@ export const updateUser = async (req, res) => {
 }
 
 // Get User by Id
-export const getUserById = async (req, res) => {
+export const getUserById = async (req,res)=>{
   try {
-    const user = await User.findOne({ _id: req.user.id });
-    res.status(200).json({ message: 'User fetched successfully', user: user });
+    const user = await User.findOne({_id:req.user.id});
+    res.status(200).json({message:'User fetched successfully',user:user});
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
   }
-
+  
 }
 
 // get all users
