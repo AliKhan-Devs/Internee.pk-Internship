@@ -48,11 +48,12 @@ export const loginUser = async (req, res) => {
 
     // 4. Set HttpOnly cookie
     res.cookie("token", jwtToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
+
 
     // 5. Return safe user info (don’t expose password!)
     res.json({
