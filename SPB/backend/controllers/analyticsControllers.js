@@ -1,4 +1,5 @@
 import Analytics from "../models/Analytics.js";
+import Portfolio from "../models/Portfolio.js";
 
 // Constant to limit the size of the history array
 const HISTORY_LIMIT = 30;
@@ -6,6 +7,16 @@ const HISTORY_LIMIT = 30;
 //  Get analytics for a portfolio
 export const getAnalytics = async (req, res) => {
   try {
+
+    // First find the portfolio and check weather it is of same user or not 
+    const portfolio = await Portfolio.findOne({ _id: req.params.id });
+    if (!portfolio) { return res.status(404).json({ message: "No portfolio found for this user" }); }
+
+    if (req.user.id !== portfolio.userId.toString()) {
+      console.log(req.user.id, portfolio.userId);
+      return res.status(403).json({ message: "Unauthorized access" });
+    }
+
     // Find the analytics document, which now includes viewsHistory
     const analytics = await Analytics.findOne({ portfolioId: req.params.id });
     if (!analytics)
@@ -13,7 +24,10 @@ export const getAnalytics = async (req, res) => {
 
     res.status(200).json({ message: "Analytics fetched successfully", analytics });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
+
+
   }
 };
 
@@ -55,14 +69,14 @@ export const increaseViews = async (req, res) => {
       }
 
       // 3. Reset daily views and update the last viewed date for the new day
-      analytics.dailyViews = 0; 
+      analytics.dailyViews = 0;
       analytics.lastViewedDate = today;
     }
-    
+
     // Ensure lastViewedDate is set for the first view after an initial anonymous sign-in 
     // or if the field was previously null
     if (!analytics.lastViewedDate) {
-         analytics.lastViewedDate = today;
+      analytics.lastViewedDate = today;
     }
 
 
