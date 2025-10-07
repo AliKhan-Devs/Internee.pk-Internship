@@ -20,7 +20,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const {user} = useAuth();
 
-//  if logedin so do not let him to visit logedin agani 
+//  if logedin so do not let him to visit logedin again
   useEffect(() => {
     if (user) {
       navigate('/dashboard');
