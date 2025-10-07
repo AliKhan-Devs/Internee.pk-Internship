@@ -4,26 +4,31 @@ import { generatePortfolio } from "../utils/generatePortfolioInitialy.js";
 import cookie from "cookie";
 // Register a new user
 export const registerUser = async (req, res) => {
-  const { name, userName, email, phone, password, } = req.body;
+  try {
+    const { name, userName, email, phone, password, } = req.body;
 
-  if (!password) {
-    throw Error('Password is required');
-  }
+    if (!password) {
+      throw Error('Password is required');
+    }
 
-  const hashedPassword = await generateHash(password);
-  if (!hashedPassword) {
-    throw Error('Error please try again');
+    const hashedPassword = await generateHash(password);
+    if (!hashedPassword) {
+      throw Error('Error please try again');
+    }
+    const newUser = {
+      name,
+      userName,
+      email,
+      phone,
+      password: hashedPassword
+    };
+    const savedUser = await User.create(newUser);
+    const portfolio = await generatePortfolio(savedUser);
+    return res.status(200).json({ message: 'Account Created Successfully', user: newUser, portfolio: portfolio });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
   }
-  const newUser = {
-    name,
-    userName,
-    email,
-    phone,
-    password: hashedPassword
-  };
-  const savedUser = await User.create(newUser);
-  const portfolio = await generatePortfolio(savedUser);
-  return res.status(200).json({ message: 'Account Created Successfully', user: newUser, portfolio: portfolio });
 }
 
 
@@ -67,7 +72,7 @@ export const loginUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message:err.message });
   }
 };
 
@@ -94,6 +99,6 @@ export const getUserById = async (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: err.message });
     });
 }

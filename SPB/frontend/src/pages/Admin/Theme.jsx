@@ -96,14 +96,14 @@ const useThemeUpdater = (currentTheme, fetchPortfolio) => {
         setStatusMessage(null);
 
         try {
-            console.log('Updating theme with:', themeToUpdate);
+            // console.log('Updating theme with:', themeToUpdate);
             await api.put(`/theme/update-theme/${currentTheme._id}`, themeToUpdate, { withCredentials: true });
             await fetchPortfolio(); // Sync context
             // setStatusMessage({ type: 'success', text: "Theme updated successfully! Preview and context synced." });
             toast.success('Theme updated Successfully')
         } catch (err) {
             // setStatusMessage({ type: 'error', text: "Failed to update theme. Please check your network or API status." });
-            toast.error("Error Updating theme please try later")
+            toast.error(err.response.data.message)
         } finally {
             setLoading(false);
             setTimeout(() => setStatusMessage(null), 5000);

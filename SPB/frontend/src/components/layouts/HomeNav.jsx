@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { href, Link } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { RiBuilding2Line } from "react-icons/ri";
@@ -13,11 +13,11 @@ export default function HomeLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
-    { name: "Home", path: "/", icon: FaHome },
-    { name: "Users", path: "/users", icon: IoPeopleSharp },
-    { name: "Overview", path: "/overview", icon: FaLocationArrow },
-    { name: "Features", path: "/features", icon: HiOutlineSparkles },
-    { name: "Contact", path: "#contact", icon: MdContactPhone },
+    { name: "Home", href: "/", icon: FaHome },
+    { name: "Users", href: "/users", icon: IoPeopleSharp },
+    { name: "Overview", href: "/overview", icon: FaLocationArrow },
+    { name: "Features", href: "/features", icon: HiOutlineSparkles },
+    { name: "Contact", href: "#contact", icon: MdContactPhone },
 
   ];
 

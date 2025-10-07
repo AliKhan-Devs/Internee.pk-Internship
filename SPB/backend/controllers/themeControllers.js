@@ -7,7 +7,7 @@ export const createTheme = async (req,res)=>{
         const id = req.params.id;
         const exist = await Theme.findOne({ _id: id });
         const portfolio = await Portfolio.findOne({ themeId: id });
-        if(portfolio?._id!==req.user.id){
+        if(portfolio.userId.toString()!==req.user.id){
             return res.status(403).json({ message: "Unauthorized access" });
         }
       

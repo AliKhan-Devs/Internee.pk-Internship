@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiPlus, FiRefreshCw } from "react-icons/fi";
 import ImageUploader from "@/components/ImageUploader";
 import IconPicker from "@/components/IconPicker";
 import RenderIcon from "@/components/RenderIcon";
 import { toast } from "sonner";
 
 export default function Profile() {
-  const { portfolio, addButton, updateButton, deleteButton, updatePortfolio, fetchPortfolio } =
-    usePortfolio();
+  const { portfolio, fetchPortfolio } = usePortfolio();
   const profiles = portfolio?.profileIds || [];
   const [loading, setLoading] = useState(false);
+  
 
   // Modal states
   const [editingProfile, setEditingProfile] = useState(null);
@@ -57,19 +57,12 @@ export default function Profile() {
     if (!editingProfile) return;
     setLoading(true);
     try {
-      const res = await api.put(
-        `/section/profile/${editingProfile._id}`,
-        formData,
-        { withCredentials: true }
-      );
-      // updatePortfolio({
-      //   profileIds: profiles.map((p) =>
-      //     p._id === editingProfile._id ? res.data : p
-      //   ),
-      // });
+      await api.put(`/section/profile/${editingProfile._id}`, formData, {
+        withCredentials: true,
+      });
       fetchPortfolio();
       setEditingProfile(null);
-      toast.success("Profile Updated Successfully")
+      toast.success("Profile Updated Successfully");
     } catch (err) {
       toast.error("Failed to update profile");
     } finally {
@@ -77,9 +70,11 @@ export default function Profile() {
     }
   };
 
+  
+
   // ---- Button Handlers ----
   const handleOpenAddButton = (profile) => {
-    setButtonData({ text: "", link: "",buttonIcon:"" });
+    setButtonData({ text: "", link: "", buttonIcon: "" });
     setAddingButtonProfile(profile);
   };
 
@@ -87,7 +82,7 @@ export default function Profile() {
     if (!addingButtonProfile) return;
     setLoading(true);
     try {
-      const res = await api.post(
+      await api.post(
         "/button/create-button",
         {
           ...buttonData,
@@ -96,10 +91,9 @@ export default function Profile() {
         },
         { withCredentials: true }
       );
-      // addButton(addingButtonProfile._id, res.data);
       fetchPortfolio();
       setAddingButtonProfile(null);
-      toast.success("Button Added Successfully")
+      toast.success("Button Added Successfully");
     } catch (err) {
       toast.error("Failed to add button");
     } finally {
@@ -108,7 +102,11 @@ export default function Profile() {
   };
 
   const handleOpenEditButton = (profileId, btn) => {
-    setButtonData({ text: btn.text, link: btn.link, buttonIcon: btn.buttonIcon });
+    setButtonData({
+      text: btn.text,
+      link: btn.link,
+      buttonIcon: btn.buttonIcon,
+    });
     setEditingButton({ ...btn, profileId });
   };
 
@@ -116,15 +114,14 @@ export default function Profile() {
     if (!editingButton) return;
     setLoading(true);
     try {
-      const res = await api.put(
+      await api.put(
         `/button/update/${editingButton._id}`,
         buttonData,
         { withCredentials: true }
       );
-      // updateButton(editingButton.profileId, editingButton._id, res.data);
       fetchPortfolio();
       setEditingButton(null);
-      toast.success("Button Updated Successfully")
+      toast.success("Button Updated Successfully");
     } catch (err) {
       toast.error("Failed to edit button");
     } finally {
@@ -137,9 +134,8 @@ export default function Profile() {
     setLoading(true);
     try {
       await api.delete(`/button/delete/${btnId}`, { withCredentials: true });
-      // deleteButton(profileId, btnId);
       fetchPortfolio();
-      toast.success("Button Deleted Successfully")
+      toast.success("Button Deleted Successfully");
     } catch (err) {
       toast.error("Failed to delete button");
     } finally {
@@ -187,7 +183,13 @@ export default function Profile() {
                     rel="noopener noreferrer"
                     className="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition"
                   >
-                    <RenderIcon iconName={btn.buttonIcon} size={20} color={'#fff'} className={'inline'}/> {btn.text}
+                    <RenderIcon
+                      iconName={btn.buttonIcon}
+                      size={20}
+                      color={"#fff"}
+                      className={"inline"}
+                    />{" "}
+                    {btn.text}
                   </a>
                   <div className="flex gap-2">
                     <Button
@@ -222,7 +224,6 @@ export default function Profile() {
         </div>
       ))}
 
-
       {/* ---- Profile Edit Modal ---- */}
       <Dialog
         open={!!editingProfile}
@@ -253,28 +254,26 @@ export default function Profile() {
             </div>
             <div className="flex flex-col gap-2">
               <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-              />
+              <div className="flex items-center gap-2">
+                <Input
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                />
+                
+              </div>
             </div>
+
             <div className="flex flex-col gap-2">
               <Label>Profile Image</Label>
-              {/* <Input
-                value={formData.profileImg}
-                onChange={(e) =>
-                  setFormData({ ...formData, profileImg: e.target.value })
-                }
-              /> */}
               <ImageUploader
-                onUpload={(url) => setFormData((prev) => ({ ...prev, profileImg: url }))}
+                onUpload={(url) =>
+                  setFormData((prev) => ({ ...prev, profileImg: url }))
+                }
                 previosImgUrl={formData.profileImg}
               />
-
             </div>
-           
           </div>
           <DialogFooter>
             <Button onClick={handleSaveProfile} disabled={loading}>
@@ -284,7 +283,7 @@ export default function Profile() {
         </DialogContent>
       </Dialog>
 
-      {/* ---- Add Button Modal ---- */}
+      {/* ---- Add & Edit Button Modals ---- */}
       <Dialog
         open={!!addingButtonProfile}
         onOpenChange={() => setAddingButtonProfile(null)}
@@ -316,7 +315,9 @@ export default function Profile() {
               <IconPicker
                 label="Icon"
                 value={buttonData.buttonIcon}
-                onChange={(iconName) => setButtonData({ ...buttonData, buttonIcon: iconName })}
+                onChange={(iconName) =>
+                  setButtonData({ ...buttonData, buttonIcon: iconName })
+                }
               />
             </div>
           </div>
@@ -328,7 +329,6 @@ export default function Profile() {
         </DialogContent>
       </Dialog>
 
-      {/* ---- Edit Button Modal ---- */}
       <Dialog
         open={!!editingButton}
         onOpenChange={() => setEditingButton(null)}
@@ -360,7 +360,9 @@ export default function Profile() {
               <IconPicker
                 label="Icon"
                 value={buttonData.buttonIcon}
-                onChange={(iconName) => setButtonData({ ...buttonData, buttonIcon: iconName })}
+                onChange={(iconName) =>
+                  setButtonData({ ...buttonData, buttonIcon: iconName })
+                }
               />
             </div>
           </div>
@@ -374,5 +376,3 @@ export default function Profile() {
     </section>
   );
 }
-
-
