@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import {
   EyeIcon,
   EyeSlashIcon,
@@ -27,6 +28,13 @@ const Login = () => {
     }
   }, [user, navigate]);
 
+const {user} = useAuth();
+  //  if logedin so do not let him to visit logedin agani 
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
   const {
     register,
     handleSubmit,
