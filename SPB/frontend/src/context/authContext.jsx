@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import api from "../utils/api";
 import { Router } from "react-router-dom";
+import { toast } from "sonner";
 
 const AuthContext = createContext();
 
@@ -30,10 +31,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true)
       const res = await api.get("/user/me", { withCredentials: true }); 
-      console.log(res)
       setUser(res.data);
     } catch (err) {
+      console.error(err);
       setUser(null);
+      toast.warning("You are not logged in or your session has expired");
+      Router.push('/login')
     } finally {
       // 2. Set loading to false once the check is complete (success or failure)
       setLoading(false); 

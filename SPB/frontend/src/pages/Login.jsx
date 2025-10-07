@@ -4,11 +4,13 @@ import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import desktopPng from "/desktop.JPG";
 import { RiBuilding2Line } from "react-icons/ri";
+import { toast } from "sonner";
 
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -22,13 +24,18 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
 
     try {
       const res = await api.post("/user/login", formData, { withCredentials: true });
       login(res.data.user);
       navigate("/dashboard");
+      setLoading(false);
+      toast.success(res.data.message);
     } catch (err) {
+      setLoading(false);
+      toast.error(err.response?.data?.message);
       setError(err.response?.data?.message || "Login failed");
     }
   };
@@ -100,8 +107,9 @@ export default function Login() {
           <button
             type="submit"
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg mt-6 font-semibold transition-all shadow-md"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Sign in"}
           </button>
 
           <p className="text-center text-gray-500 text-sm mt-4">

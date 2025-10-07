@@ -46,12 +46,13 @@ export const loginUser = async (req, res) => {
     return res.status(500).json('Error Occured please try agani');
   }
    // 4. Set HttpOnly cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+       res.cookie("token", token, {
+         httpOnly: true,
+         secure: process.env.NODE_ENV === "production",
+         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+         maxAge: 7 * 24 * 60 * 60 * 1000,
+       });
+
 
   return res.status(200).json({ 
     message: 'Login Successfull', 
