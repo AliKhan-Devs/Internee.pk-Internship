@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import {
@@ -21,9 +20,6 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-<<<<<<< HEAD
-const {user} = useAuth();
-=======
   const {user} = useAuth();
 
   useEffect(() => {
@@ -32,13 +28,7 @@ const {user} = useAuth();
     }
   }, [user, navigate]);
 
->>>>>>> upstream/main
 
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
   const {
     register,
     handleSubmit,
