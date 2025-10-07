@@ -27,7 +27,7 @@ const Login = () => {
     }
   }, [user, navigate]);
 
-const {user} = useAuth();
+
   //  if logedin so do not let him to visit logedin agani 
   useEffect(() => {
     if (user) {
