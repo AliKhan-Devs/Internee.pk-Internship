@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import { generateHash, CompareHash, generateToken } from "../utils/auth.js";
 import { generatePortfolio } from "../utils/generatePortfolioInitialy.js";
 import cookie from "cookie";
+import axios from "axios";
 // Register a new user
 export const registerUser = async (req, res) => {
   try {
@@ -59,6 +60,26 @@ export const loginUser = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    const url = process.env.n8n_WEBHOOK_URL;
+    //  Send login notification via n8n
+
+    const auth = {
+      username: process.env.n8n_username,       // your n8n webhook Basic Auth username
+      password: process.env.n8n_password    // your n8n webhook Basic Auth password
+    };
+
+    const data = {
+      email: user.email,
+      subject: "Login Notification - PortaBuild",
+      message: `Hello ${user.name}, you have successfully logged in to PortaBuild at ${new Date().toLocaleString()}. If this wasn't you, please secure your account immediately.`
+    };
+
+    try {
+      const response = await axios.post(url, data, { auth });
+      console.log("Webhook triggered:", response.data);
+    } catch (err) {
+      console.error("Error triggering webhook:", err.response?.data || err.message);
+    }
 
     // 5. Return safe user info (don’t expose password!)
     res.json({
@@ -72,7 +93,7 @@ export const loginUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message:err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 

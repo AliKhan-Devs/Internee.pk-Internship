@@ -630,8 +630,9 @@ export default function ViewPortfolio() {
               {/* Contact Details */}
               <div className="mb-10 space-y-2">
                 {user?.email && (
-                  <p className="text-2xl font-medium">
-                    Email: <a href={`mailto:${user?.email}`} className="font-semibold transition-colors hover:opacity-80" style={{ color: secondary }}>{user?.email}</a>
+                  // allow text break
+                  <p className="text-2xl font-medium break-all">
+                    Email: <a href={`mailto:${user?.email}`} className="font-semibold transition-colors hover:opacity-80 " style={{ color: secondary }}>{user?.email}</a>
                   </p>
                 )}
                 {user?.phone && (
@@ -642,7 +643,7 @@ export default function ViewPortfolio() {
               </div>
 
               {/* Social Links */}
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-wrap justify-center space-x-4">
                 {contact.facebookUrl && (
                   <a href={contact.facebookUrl} target="_blank" rel="noopener noreferrer" className="text-3xl font-medium transition-colors hover:opacity-80" style={{ color: secondary }}>
                     <FaFacebook className="inline mr-2" />
