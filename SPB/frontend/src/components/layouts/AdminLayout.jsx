@@ -38,7 +38,7 @@ const AdminLayout = () => {
     // { name: "Overview", path: "/overview", icon: FaLayerGroup },
     { name: "Theme", path: "/theme", icon: MdColorLens },
     { name: "Contact", path: "/contact", icon: MdContactPhone },
-    { name: "View Portfolio", path: `users/${user?.userName}`, icon: Eye },
+    // { name: "View Portfolio", path: `users/${user?.userName}`, icon: Eye },
   ];
   const bottomNavItems = [
     { name: "Projects", path: "/projects", icon: Briefcase },
