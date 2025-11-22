@@ -1,4 +1,5 @@
 # 📌 Internship Management System (IMS)
+![img](./ims.JPG)
 
 The **Internship Management System (IMS)** is a full-stack MERN project developed as part of my virtual internship at **Internee.pk**.  
 It follows a complete **Software Development Life Cycle (SDLC)** approach — starting from **SRS → Design → Implementation → Testing → Documentation**.
@@ -42,6 +43,10 @@ It follows a complete **Software Development Life Cycle (SDLC)** approach — st
 (Each folder has its own README for setup and usage instructions.)  
 
 ---
+
+## Project Archetecture
+
+![img](./SDLC/IMS%20Design%20Phase/IMS%20Highlevel%20system%20design.jpg)
 
 ## ⚡ Getting Started
 
