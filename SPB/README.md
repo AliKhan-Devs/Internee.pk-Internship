@@ -1,5 +1,5 @@
 # PortaBuild 🚀
-![image](/porta-build.JPG)
+![image](./porta-build.JPG)
 **Build Your Professional Portfolio Without Writing a Single Line of Code**
 
 PortaBuild is a powerful, no-code portfolio builder platform that empowers users to create stunning, personalized portfolios with complete control over every detail. Whether you're a student, professional, or creative, PortaBuild makes it easy to showcase your work, skills, and achievements.
@@ -27,7 +27,7 @@ SPB/
 ```
 ## Project Archecture
 <!-- image  -->
-![image](/archetecture.JPG)
+![image](./archetecture.JPG)
 ```
 ## 🚀 Quick Start
 
