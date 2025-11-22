@@ -17,7 +17,7 @@ Each project is structured as a **full-stack MERN application** (React, Node.js,
 
 ## 🚀 Projects
 
-### 1️⃣ Internship Management System (IMS)
+### 1 Internship Management System (IMS)
 - **Objective:** A full-stack system to manage and track intern progress.  
 - **Features:**  
   - Admin: Manage internships, onboard interns, assign tasks, review submissions.  
@@ -27,6 +27,24 @@ Each project is structured as a **full-stack MERN application** (React, Node.js,
   - [IMS Overview README](./IMS/README.md)  
   - [Frontend README](./IMS/frontend/README.md)  
   - [Backend README](./IMS/backend/README.md)  
+
+---
+### 2 Portfolio Builder (PortaBuild)
+- **Objective:** A Progressive app to create and launch your custom portfolio with zero code.  
+- **Features:**  
+  - Get inital portfolio on Signup 
+  - Allow User to customise hero and about section (image, heading, tagline, buttons(text, link, icon))
+  - Real Time Analytics 
+  - Sharable Link
+  - Fully Responsive on all device
+  - Can be installed as an App in mobile or desktop 
+  - Email Notifications on login and signup
+   
+- **Tech Stack:** React, Tailwind CSS, Node.js, Express, MongoDB, JWT Auth, n8n.  
+- **Documentation:**  
+  - [Portabuild Overview README](./SPB/README.md)  
+  - [Frontend README](./SPB/frontend/README.md)  
+  - [Backend README](./SPB/backend/README.md)  
 
 ---
 

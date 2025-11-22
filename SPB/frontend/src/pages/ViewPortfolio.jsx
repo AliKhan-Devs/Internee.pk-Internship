@@ -691,7 +691,7 @@ export default function ViewPortfolio() {
               </div>
 
               <p className="mt-16 text-sm" style={{ color: textSecondary }}>
-                &copy; {new Date().getFullYear()} {portfolio.user?.username}'s Portfolio. Built with your Platform.
+                &copy; {new Date().getFullYear()} {portfolio.user?.username}'s Portfolio. Built with PortaBuild.
               </p>
             </div>
           </section>
