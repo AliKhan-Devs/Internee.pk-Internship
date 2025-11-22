@@ -11,13 +11,17 @@ Each project is structured as a **full-stack MERN application** (React, Node.js,
   - Each subfolder includes its own README (setup & usage)  
   - Root-level IMS README provides project overview  
 
-*(More projects will be added here as I progress in the internship.)*  
-
+- **SPB/** → Portfolio Builder (PortaBuild)  
+  - Complete project with `frontend/` and `backend/` directories  
+  - Each subfolder includes its own README (setup & usage)  
+  - Root-level SPB README provides project overview  
+ 
 ---
 
 ## 🚀 Projects
 
 ### 1 Internship Management System (IMS)
+![img](./IMS/ims.JPG)
 - **Objective:** A full-stack system to manage and track intern progress.  
 - **Features:**  
   - Admin: Manage internships, onboard interns, assign tasks, review submissions.  
@@ -30,6 +34,7 @@ Each project is structured as a **full-stack MERN application** (React, Node.js,
 
 ---
 ### 2 Portfolio Builder (PortaBuild)
+![img](./SPB/porta-build.JPG)
 - **Objective:** A Progressive app to create and launch your custom portfolio with zero code.  
 - **Features:**  
   - Get inital portfolio on Signup 
