@@ -53,6 +53,9 @@ Each project is structured as a **full-stack MERN application** (React, Node.js,
 
 ---
 
+### Resume Builder With PDF Export
+
+
 ## ✅ SDLC Approach
 Each project in this repository follows the **SDLC phases**:
 1. **Requirements (SRS)** – Defining functional & non-functional requirements.  
