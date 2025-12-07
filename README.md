@@ -18,6 +18,13 @@ Internee.pk-Internship/
 │   └── backend/                                  # Node.js + Express API
 │       └── README.md                             # Backend setup & APIs
 │
+├── Portfolio_Builder/                            # Portfolio Builder (PortaBuild)
+│   ├── README.md                                 # Project overview
+│   ├── frontend/                                 # React + Tailwind app
+│   │   └── README.md                             # Frontend documentation
+│   └── backend/                                  # Node.js + Express API
+│       └── README.md                             # Backend documentation
+│
 ├── Auto_Task_Reminder/                           # Task Reminder with Cron Jobs
 │   ├── README.md                                 # Project overview
 │   ├── client/                                   # React + Vite + Tailwind
@@ -71,7 +78,28 @@ Internee.pk-Internship/
 
 ---
 
-### 2. ⏰ Auto Task Reminder
+### 2. 🎨 Portfolio Builder (PortaBuild)
+**Objective:** A progressive web app that enables users to create and launch custom portfolios with zero coding required. Features real-time analytics, shareable links, and mobile app installation.
+
+**Key Features:**
+- **Auto Portfolio Generation:** Get instant portfolio on signup
+- **Customization:** Edit hero section, about section, images, headings, and buttons
+- **Real-time Analytics:** Track portfolio views and engagement
+- **Shareable Links:** Generate unique shareable portfolio URLs
+- **PWA Support:** Install as mobile or desktop app
+- **Email Notifications:** Alerts on login and signup events
+- **Fully Responsive:** Optimized for all devices
+
+**Tech Stack:** React, Tailwind CSS, Node.js, Express, MongoDB, JWT Authentication, n8n (automation)
+
+**Documentation:**
+- [📄 Portfolio Builder Overview](./Portfolio_Builder/README.md)
+- [🎨 Frontend README](./Portfolio_Builder/frontend/README.md)
+- [⚙️ Backend README](./Portfolio_Builder/backend/README.md)
+
+---
+
+### 3. ⏰ Auto Task Reminder
 **Objective:** A simple yet powerful MERN application for creating and managing task reminders based on date and time.
 
 **Key Features:**
@@ -91,7 +119,7 @@ Internee.pk-Internship/
 
 ---
 
-### 3. 📊 Collaborative WorkSpace Kanban Style
+### 4. 📊 Collaborative WorkSpace Kanban Style
 **Objective:** A full-featured Kanban board application with drag-and-drop functionality for collaborative team task management.
 
 **Key Features:**
@@ -111,7 +139,7 @@ Internee.pk-Internship/
 
 ---
 
-### 4. 🎓 MERN LMS with PayPal Integration
+### 5. 🎓 MERN LMS with PayPal Integration
 **Objective:** A complete Learning Management System enabling instructors to create and sell courses while students can purchase, learn, and track progress with integrated PayPal payments.
 
 **Key Features:**
@@ -131,7 +159,7 @@ Internee.pk-Internship/
 
 ---
 
-### 5. 📝 Resume Builder MERN
+### 6. 📝 Resume Builder MERN
 **Objective:** A professional resume builder application that enables users to create, customize, and export resumes in multiple formats with beautiful pre-designed templates.
 
 **Key Features:**
